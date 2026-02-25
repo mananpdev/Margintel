@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg-0: #04060c;
+  --bg-1: #0a0f1c;
+  --bg-2: #111a2e;
+  --bg-3: #182240;
+  --glass: rgba(14, 22, 42, 0.6);
+  --glass-border: rgba(65, 90, 150, 0.2);
+  --glass-hover: rgba(65, 90, 150, 0.3);
+  --text-1: #f0f4fc;
+  --text-2: #94a8cc;
+  --text-3: #5a6e8a;
+  --accent: #6384ff;
+  --accent-2: #a370f7;
+  --accent-3: #f471b5;
+  --green: #4ade80;
+  --green-dim: rgba(74, 222, 128, 0.1);
+  --yellow: #facc15;
+  --yellow-dim: rgba(250, 204, 21, 0.1);
+  --red: #fb7185;
+  --red-dim: rgba(251, 113, 133, 0.1);
+  --blue: #60a5fa;
+  --blue-dim: rgba(96, 165, 250, 0.1);
+  --grad: linear-gradient(135deg, #6384ff 0%, #a370f7 50%, #f471b5 100%);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --font: 'Inter', system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg-0);
+  color: var(--text-1);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+
+/* ── Utility ── */
+.container { max-width: 1380px; margin: 0 auto; padding: 0 24px; }
+.mono { font-family: var(--mono); }
+.gradient-text { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+/* ── Glass Card ── */
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.glass:hover { border-color: var(--glass-hover); }
+
+/* ── Ambient BG ── */
+.ambient {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+}
+.ambient .orb {
+  position: absolute; border-radius: 50%; filter: blur(160px); opacity: 0.5;
+}
+.ambient .orb-1 { width: 600px; height: 600px; background: rgba(99,132,255,0.06); top: -200px; right: -100px; animation: float 30s ease-in-out infinite alternate; }
+.ambient .orb-2 { width: 500px; height: 500px; background: rgba(163,112,247,0.04); bottom: -180px; left: -80px; animation: float 25s ease-in-out infinite alternate-reverse; }
+.ambient .orb-3 { width: 350px; height: 350px; background: rgba(244,113,181,0.03); top: 40%; left: 50%; animation: float 20s ease-in-out infinite alternate; }
+@keyframes float { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(60px,40px) scale(1.1)} }

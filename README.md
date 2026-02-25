@@ -1,8 +1,5 @@
 # Margintel | The AI Margin Intelligence Engine (v1.0)
 
-[![Engine Status](https://img.shields.io/badge/Engine-Active-06B6D4?style=for-the-badge)](https://github.com/mananpdev/margin-intel-engine)
-[![Framework](https://img.shields.io/badge/Architecture-Obsidian_Clean-8B5CF6?style=for-the-badge)](docs/architecture.md)
-
 > **Margintel** is an industrial-grade intelligence layer that converts raw, messy ecommerce transaction streams into high-fidelity strategic roadmaps. It bridges the gap between **deterministic financial reconcilation** and **generative strategic synthesis**.
 
 ---

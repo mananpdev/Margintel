@@ -101,6 +101,17 @@ def load_orders_csv(source) -> tuple[pd.DataFrame, list[str]]:
     df = _coerce_dates(df, ["order_date"])
 
     # Compute revenue per row
+    # In some datasets (like UCI Online Retail), returns are negative quantity lines
+    if "quantity" in df.columns and "item_price" in df.columns:
+        # Create a virtual refund column if it doesn't exist to capture negative lines
+        if "refund_amount" not in df.columns:
+            # If quantity is negative, we treat it as a refund of the absolute value
+            df["refund_amount"] = df.apply(
+                lambda x: abs(x["quantity"] * x["item_price"]) if x["quantity"] < 0 else 0, axis=1
+            )
+            # Then we zero out the negative quantity so it doesn't double-subtract in revenue
+            df.loc[df["quantity"] < 0, "quantity"] = 0
+
     if "line_total" in df.columns and df["line_total"].sum() > 0:
         df["_revenue"] = df["line_total"]
     else:

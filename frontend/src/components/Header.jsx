@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Zap, Activity, ShieldAlert } from 'lucide-react'
 
 export default function Header() {
     const [health, setHealth] = useState(null)
@@ -19,48 +18,60 @@ export default function Header() {
     }, [])
 
     return (
-        <header className="h-[var(--nav-height)] border-b border-white/5 backdrop-blur-md sticky top-0 z-[100] bg-black/20">
-            <div className="container h-full flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(45,212,191,0.3)]">
-                        <Zap size={22} className="text-black fill-black" strokeWidth={1.5} />
+        <header style={{
+            height: '80px',
+            borderBottom: '1px solid var(--border)',
+            backdropBlur: '12px',
+            position: 'sticky',
+            top: 0,
+            zIndex: 100,
+            backgroundColor: 'rgba(0,0,0,0.5)'
+        }}>
+            <div className="container" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{
+                        width: '32px',
+                        height: '32px',
+                        borderRadius: 'var(--radius-sm)',
+                        background: 'var(--primary)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 0 20px rgba(255,255,255,0.1)'
+                    }}>
+                        <div style={{ width: '14px', height: '14px', borderRadius: '2px', backgroundColor: '#000' }} />
                     </div>
-                    <div>
-                        <h1 className="text-xl font-black tracking-tighter">Margintel</h1>
-                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Intelligence Layer 0.1</p>
-                    </div>
+                    <h1 style={{ fontSize: '1.25rem', fontWeight: 600, letterSpacing: '-0.02em' }}>Margintel</h1>
                 </div>
 
                 <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-3 px-4 py-2 rounded-full border border-white/5 bg-white/5">
-                        <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${health?.ok ? 'bg-primary' : 'bg-accent'}`} />
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                            {health?.ok ? (health?.llm_available ? 'Engine Ready' : 'Core Only') : 'Offline'}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '999px',
+                        border: '1px solid var(--border)',
+                        background: 'rgba(255,255,255,0.03)'
+                    }}>
+                        <div className={`w-2 h-2 rounded-full ${health?.ok ? 'bg-success' : 'bg-error'}`} style={{
+                            backgroundColor: health?.ok ? 'var(--success)' : 'var(--error)',
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%'
+                        }} />
+                        <span style={{
+                            fontSize: '0.6875rem',
+                            fontWeight: 600,
+                            color: 'var(--text-secondary)',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em'
+                        }}>
+                            {health?.ok ? (health?.llm_available ? 'Engine Optimized' : 'Core Ready') : 'Connection Interrupted'}
                         </span>
                     </div>
                 </div>
             </div>
-            <style>{`
-        .h-\\[var\\(--nav-height\\)\\] { height: var(--nav-height); }
-        .h-full { height: 100%; }
-        .border-b { border-bottom-width: 1px; }
-        .border-white\\/5 { border-color: rgba(255, 255, 255, 0.05); }
-        .backdrop-blur-md { backdrop-filter: blur(12px); }
-        .bg-black\\/20 { background-color: rgba(0, 0, 0, 0.2); }
-        .text-xl { font-size: 1.25rem; }
-        .font-black { font-weight: 900; }
-        .tracking-tighter { letter-spacing: -0.05em; }
-        .tracking-wider { letter-spacing: 0.05em; }
-        .text-black { color: black; }
-        .fill-black { fill: black; }
-        .w-10 { width: 2.5rem; }
-        .h-10 { height: 2.5rem; }
-        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: .5; }
-        }
-      `}</style>
         </header>
     )
 }

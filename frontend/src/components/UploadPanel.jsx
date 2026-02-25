@@ -1,17 +1,11 @@
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Upload, FileText, CheckCircle2, ChevronRight, Settings } from 'lucide-react'
 
 export default function UploadPanel({ onSubmit, loading, progress }) {
     const [orders, setOrders] = useState(null)
     const [returns, setReturns] = useState(null)
     const inputRef = useRef()
     const returnRef = useRef()
-
-    const handleDrag = (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-    }
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -23,124 +17,94 @@ export default function UploadPanel({ onSubmit, loading, progress }) {
     }
 
     return (
-        <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="glass p-8 relative overflow-hidden"
-        >
-            <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+        <div className="glass" style={{ padding: '2rem' }}>
+            <h2 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1.5rem' }}>Configure Dataset</h2>
 
-            <div className="flex items-center justify-between mb-8">
-                <h2 className="text-lg font-bold">Configure Analysis</h2>
-                <Settings size={18} className="text-slate-500" />
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em]">Source Infrastructure</label>
-
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {/* Orders Upload */}
                     <div
                         onClick={() => inputRef.current.click()}
-                        onDragOver={handleDrag}
-                        onDrop={(e) => {
-                            handleDrag(e)
-                            setOrders(e.dataTransfer.files[0])
+                        style={{
+                            height: '120px',
+                            borderRadius: 'var(--radius-lg)',
+                            border: `1px dashed ${orders ? 'var(--accent)' : 'var(--border)'}`,
+                            background: orders ? 'rgba(99, 102, 241, 0.05)' : 'rgba(255,255,255,0.02)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s ease',
+                            gap: '0.5rem'
                         }}
-                        className={`group h-32 rounded-2xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${orders ? 'border-primary/40 bg-primary/5' : 'border-white/5 hover:border-white/10 hover:bg-white/5'
-                            }`}
                     >
                         <input
-                            ref={inputRef} type="file" className="hidden"
+                            ref={inputRef} type="file" style={{ display: 'none' }}
                             onChange={(e) => setOrders(e.target.files[0])}
                         />
                         {orders ? (
-                            <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="text-center">
-                                <CheckCircle2 size={32} className="text-primary mx-auto mb-2" />
-                                <p className="text-xs font-medium text-slate-300">{orders.name}</p>
-                            </motion.div>
+                            <span style={{ fontSize: '0.8125rem', color: '#fff', fontWeight: 500 }}>{orders.name}</span>
                         ) : (
-                            <>
-                                <div className="p-3 rounded-full bg-white/5 group-hover:bg-primary/10 transition-colors">
-                                    <Upload size={20} className="text-slate-500 group-hover:text-primary transition-colors" />
-                                </div>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Connect Orders CSV</p>
-                            </>
+                            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Drop <b style={{ color: '#fff' }}>Orders CSV</b> here</span>
                         )}
+                        <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>Required</span>
                     </div>
 
                     {/* Returns Upload */}
                     <div
                         onClick={() => returnRef.current.click()}
-                        onDragOver={handleDrag}
-                        onDrop={(e) => {
-                            handleDrag(e)
-                            setReturns(e.dataTransfer.files[0])
+                        style={{
+                            padding: '1rem 1.25rem',
+                            borderRadius: 'var(--radius-md)',
+                            border: `1px solid ${returns ? 'var(--accent)' : 'var(--border)'}`,
+                            background: 'rgba(255,255,255,0.02)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            transition: 'all 0.2s ease'
                         }}
-                        className={`group h-24 rounded-2xl border border-dashed transition-all cursor-pointer flex items-center px-6 gap-4 ${returns ? 'border-primary/40 bg-primary/5' : 'border-white/5 hover:border-white/10 hover:bg-white/5'
-                            }`}
                     >
                         <input
-                            ref={returnRef} type="file" className="hidden"
+                            ref={returnRef} type="file" style={{ display: 'none' }}
                             onChange={(e) => setReturns(e.target.files[0])}
                         />
-                        <div className={`p-2 rounded-lg ${returns ? 'bg-primary/20' : 'bg-white/5'}`}>
-                            <FileText size={16} className={returns ? 'text-primary' : 'text-slate-500'} />
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontSize: '0.8125rem', color: returns ? '#fff' : 'var(--text-secondary)', fontWeight: 500 }}>
+                                {returns ? returns.name : 'Supplement Returns Data'}
+                            </span>
+                            <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>Optional</span>
                         </div>
-                        <div className="flex-grow">
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Returns Data</p>
-                            <p className="text-[10px] text-slate-500">{returns ? returns.name : 'Optional supplementation'}</p>
-                        </div>
-                        {returns && <CheckCircle2 size={16} className="text-primary" />}
                     </div>
                 </div>
 
                 <button
                     disabled={!orders || loading}
-                    className={`w-full h-14 rounded-2xl flex items-center justify-between px-8 font-bold transition-all ${!orders || loading
-                            ? 'bg-white/5 text-slate-600 grayscale'
-                            : 'bg-primary text-black shadow-[0_0_30px_rgba(45,212,191,0.2)] hover:scale-[1.02] active:scale-[0.98]'
-                        }`}
+                    className="btn-primary"
+                    style={{
+                        width: '100%',
+                        opacity: (!orders || loading) ? 0.3 : 1,
+                        cursor: (!orders || loading) ? 'not-allowed' : 'pointer'
+                    }}
                 >
-                    <span className="uppercase tracking-widest text-[11px]">Initiate Neural Sync</span>
-                    <ChevronRight size={18} />
+                    {loading ? 'Processing...' : 'Analyze Datasets'}
                 </button>
             </form>
 
-            <AnimatePresence>
-                {progress.pct > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mt-8 pt-8 border-t border-white/5"
-                    >
-                        <div className="flex justify-between items-end mb-3">
-                            <span className="text-[10px] font-black uppercase text-primary tracking-widest">{progress.label}</span>
-                            <span className="text-[10px] font-mono text-slate-500">{Math.round(progress.pct)}%</span>
-                        </div>
-                        <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                            <motion.div
-                                className="h-full bg-primary shadow-[0_0_10px_var(--primary)]"
-                                animate={{ width: `${progress.pct}%` }}
-                            />
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            <style>{`
-        .h-32 { height: 8rem; }
-        .h-24 { height: 6rem; }
-        .h-14 { height: 3.5rem; }
-        .border-dashed { border-style: dashed; }
-        .border-2 { border-width: 2px; }
-        .grayscale { filter: grayscale(100%); }
-        .tracking-\\[0\\.2em\\] { letter-spacing: 0.2em; }
-        .leading-none { line-height: 1; }
-        .pt-8 { padding-top: 2rem; }
-        .shadow-\\[0_0_10px_var\\(--primary\\)\\] { box-shadow: 0 0 10px #2DD4BF; }
-      `}</style>
-        </motion.div>
+            {progress.pct > 0 && (
+                <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>{progress.label}</span>
+                        <span style={{ fontSize: '0.75rem', fontFamily: 'var(--mono)', color: 'var(--text-muted)' }}>{Math.round(progress.pct)}%</span>
+                    </div>
+                    <div style={{ h: '2px', width: '100%', background: 'var(--border)', borderRadius: '999px', h: '2px', overflow: 'hidden' }}>
+                        <div
+                            style={{ h: '100%', bg: '#fff', width: `${progress.pct}%`, transition: 'width 0.3s ease', height: '2px', background: '#fff' }}
+                        />
+                    </div>
+                </div>
+            )}
+        </div>
     )
 }

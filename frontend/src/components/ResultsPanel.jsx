@@ -1,27 +1,18 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
-import { LayoutGrid, TrendingUp, ArrowUpRight, CheckCircle2 } from 'lucide-react'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts'
 
-const COLORS = ['#2DD4BF', '#3B82F6', '#F43F5E', '#A855F7', '#F59E0B']
+const COLORS = ['#6366F1', '#ffffff', '#71717a', '#27272a', '#18181b', '#3f3f46']
 
 export default function ResultsPanel({ report }) {
-    const [activeTab, setActiveTab] = useState('overview')
+    const [activeTab, setActiveTab] = useState('summary')
 
     if (!report) {
         return (
-            <div className="h-full min-h-[600px] glass flex flex-col items-center justify-center p-12 text-center relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1 bg-white/5" />
-                <div className="w-20 h-20 rounded-[2rem] bg-white/5 flex items-center justify-center mb-10 border border-white/5 shadow-inner">
-                    <motion.div
-                        animate={{ rotate: [0, 90, 180, 270, 360], borderRadius: ["2rem", "1rem", "2rem"] }}
-                        transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                        <LayoutGrid className="text-slate-500" size={28} />
-                    </motion.div>
+            <div className="glass" style={{ height: '100%', minHeight: '640px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--muted)', background: 'rgba(255,255,255,0.01)' }}>
+                <div style={{ padding: '2rem', border: '1px solid var(--border)', borderRadius: '12px', textAlign: 'center' }}>
+                    <p style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Awaiting Analytical Payload</p>
                 </div>
-                <h3 className="text-3xl font-black tracking-tighter mb-4">Command Awaiting Input</h3>
-                <p className="text-slate-500 max-w-sm text-sm leading-relaxed font-medium">Synchronize your logistical data streams to the command center to generate optimized fiscal intelligence.</p>
             </div>
         )
     }
@@ -29,31 +20,43 @@ export default function ResultsPanel({ report }) {
     const p = report.profiling || {}
     const rd = (report.modules || {}).revenue_dependency_risk || {}
     const dec = report.decision_output || {}
+    const ri = (report.modules || {}).returns_intelligence || {}
     const actions = dec.ranked_actions || []
 
     const skuRevData = Object.entries(p.sku_revenue_breakdown || {}).slice(0, 5).map(([name, value]) => ({ name, value }))
 
     return (
-        <div className="space-y-8">
-            {/* Precision Navigation */}
-            <div className="flex bg-white/5 p-2 rounded-[2rem] border border-white/5 backdrop-blur-3xl">
-                {['overview', 'returns', 'actions'].map((t) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+            {/* Strategic Navigation */}
+            <nav style={{ display: 'flex', gap: '2.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '1.25rem' }}>
+                {['summary', 'risk models', 'recommendations'].map((t) => (
                     <button
                         key={t}
                         onClick={() => setActiveTab(t)}
-                        className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all relative ${activeTab === t ? 'text-black' : 'text-slate-500 hover:text-slate-300'
-                            }`}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: activeTab === t ? '#fff' : 'var(--muted)',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.15em',
+                            cursor: 'pointer',
+                            position: 'relative',
+                            padding: '0 0.25rem',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                        }}
                     >
+                        {t}
                         {activeTab === t && (
                             <motion.div
-                                layoutId="tab-highlight"
-                                className="absolute inset-0 bg-primary rounded-2xl z-0 shadow-[0_0_30px_rgba(45,212,191,0.4)]"
+                                layoutId="active-indicator"
+                                style={{ position: 'absolute', bottom: '-1.375rem', left: 0, right: 0, height: '1px', background: '#fff' }}
                             />
                         )}
-                        <span className="relative z-10">{t}</span>
                     </button>
                 ))}
-            </div>
+            </nav>
 
             <AnimatePresence mode="wait">
                 <motion.div
@@ -61,138 +64,170 @@ export default function ResultsPanel({ report }) {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -15 }}
-                    transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-                    className="min-h-[500px]"
+                    transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                 >
-                    {activeTab === 'overview' && (
-                        <div className="bento-grid">
-                            <div className="lg:col-span-8 grid grid-cols-2 gap-6">
-                                <div className="glass p-8 group">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Aggregate Volume</span>
-                                        <div className="p-1 px-2 rounded-lg bg-primary/10 text-primary text-[10px] font-bold">+12%</div>
-                                    </div>
-                                    <div className="text-4xl font-black tracking-tighter">${(p.total_revenue / 1000).toFixed(1)}k</div>
-                                </div>
-
-                                <div className="glass p-8">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Exposure Delta</span>
-                                        <div className="p-1 px-2 rounded-lg bg-accent/10 text-accent text-[10px] font-bold">Risk</div>
-                                    </div>
-                                    <div className="text-4xl font-black tracking-tighter text-accent">${(p.total_refunds / 1000).toFixed(1)}k</div>
-                                </div>
-
-                                <div className="col-span-2 glass p-10 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-8 opacity-10">
-                                        <TrendingUp size={120} className="text-primary" />
-                                    </div>
-                                    <div className="relative z-10">
-                                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 mb-10">Revenue Distribution Scan</h3>
-                                        <div className="h-72">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <PieChart>
-                                                    <Pie
-                                                        data={skuRevData}
-                                                        innerRadius={70}
-                                                        outerRadius={100}
-                                                        paddingAngle={10}
-                                                        dataKey="value"
-                                                        stroke="none"
-                                                    >
-                                                        {skuRevData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} cornerRadius={4} />)}
-                                                    </Pie>
-                                                    <Tooltip
-                                                        contentStyle={{ backgroundColor: 'rgba(5, 10, 20, 0.95)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', backdropFilter: 'blur(20px)' }}
-                                                        itemStyle={{ fontSize: '11px', color: '#F8FAFC', fontWeight: 'bold' }}
-                                                    />
-                                                </PieChart>
-                                            </ResponsiveContainer>
-                                        </div>
-                                    </div>
-                                </div>
+                    {activeTab === 'summary' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
+                                <LuxuryMetric label="Gross Contribution" value={`$${(p.total_revenue / 1000).toFixed(1)}K`} />
+                                <LuxuryMetric label="Estimated Leakage" value={`$${(p.total_refunds / 1000).toFixed(1)}K`} isNegative />
+                                <LuxuryMetric label="Margin Integrity" value={rd.risk_level === 'high' ? 'DEGRADED' : 'OPTIMAL'} highlight={rd.risk_level === 'high'} />
                             </div>
 
-                            <div className="lg:col-span-4 space-y-6">
-                                <div className="glass p-8 relative overflow-hidden">
-                                    <div className={`absolute top-0 left-0 w-1 h-full ${rd.risk_level === 'high' ? 'bg-accent' : 'bg-primary'}`} />
-                                    <h3 className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-6">Threat level</h3>
-                                    <div className="flex items-end gap-3">
-                                        <div className="text-5xl font-black uppercase tracking-tighter leading-none">{rd.risk_level || 'Low'}</div>
-                                        <div className="text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-widest">Nominal</div>
-                                    </div>
+                            <div className="glass" style={{ padding: '2.5rem', background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%)' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+                                    <h3 style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--muted)', letterSpacing: '0.1em' }}>
+                                        Revenue Signature Distribution
+                                    </h3>
                                 </div>
 
-                                <div className="glass p-8 border-primary/20 bg-primary/5">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                                            <TrendingUp size={10} className="text-black" />
+                                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '4rem', alignItems: 'center' }}>
+                                    <div style={{ height: '320px', position: 'relative' }}>
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <PieChart>
+                                                <Pie
+                                                    data={skuRevData}
+                                                    innerRadius={90}
+                                                    outerRadius={120}
+                                                    paddingAngle={8}
+                                                    dataKey="value"
+                                                >
+                                                    {skuRevData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="none" />)}
+                                                </Pie>
+                                                <RechartsTooltip
+                                                    contentStyle={{ backgroundColor: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '11px', fontFamily: 'var(--mono)' }}
+                                                />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                                            <div style={{ fontSize: '0.6rem', fontWeight: 800, color: 'var(--muted)', letterSpacing: '0.1em' }}>TOTAL</div>
+                                            <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>100%</div>
                                         </div>
-                                        <h3 className="text-[10px] font-black uppercase text-primary tracking-widest">Strategic Vector</h3>
                                     </div>
-                                    <p className="text-sm text-slate-300 leading-relaxed font-medium">Analysis indicates a 42% revenue dependency on top-tier inventory. Transitioning towards a diversified distribution strategy is prioritized.</p>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                        {skuRevData.map((s, i) => (
+                                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', paddingBottom: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                                    <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: COLORS[i % COLORS.length] }} />
+                                                    <span style={{ color: '#fff', fontWeight: 600, fontFamily: 'var(--mono)' }}>{s.name}</span>
+                                                </div>
+                                                <span style={{ fontWeight: 700, opacity: 0.8 }}>${(s.value / 1000).toFixed(1)}K</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {activeTab === 'actions' && (
-                        <div className="space-y-6">
+                    {activeTab === 'risk models' && (
+                        <div className="glass" style={{ background: 'rgba(255,255,255,0.01)' }}>
+                            <div style={{ padding: '2rem', borderBottom: '1px solid var(--border)' }}>
+                                <h3 style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Anomaly Registry</h3>
+                            </div>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                                <thead>
+                                    <tr style={{ background: 'rgba(255,255,255,0.01)', textAlign: 'left', borderBottom: '1px solid var(--border)' }}>
+                                        <th style={{ padding: '1.25rem 2rem', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.05em' }}>SKU IDENTIFIER</th>
+                                        <th style={{ padding: '1.25rem 2rem', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.05em' }}>RETURN INDEX</th>
+                                        <th style={{ padding: '1.25rem 2rem', fontWeight: 700, color: 'var(--muted)', letterSpacing: '0.05em' }}>CAPITAL EXPOSURE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {(p.high_return_skus || []).map((s, i) => (
+                                        <tr key={i} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s ease' }} className="hover-row">
+                                            <td style={{ padding: '1.25rem 2rem', fontFamily: 'var(--mono)', fontWeight: 600 }}>{s.sku}</td>
+                                            <td style={{ padding: '1.25rem 2rem' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                    <div style={{ flexGrow: 1, height: '2px', background: 'rgba(255,255,255,0.05)', borderRadius: '1px', width: '100px', overflow: 'hidden' }}>
+                                                        <div style={{ height: '100%', background: s.return_rate > 0.2 ? '#fff' : 'var(--accent)', width: `${s.return_rate * 100}%` }} />
+                                                    </div>
+                                                    <span style={{ fontWeight: 700, fontSize: '0.7rem' }}>{(s.return_rate * 100).toFixed(1)}%</span>
+                                                </div>
+                                            </td>
+                                            <td style={{ padding: '1.25rem 2rem', fontWeight: 700 }}>${s.estimated_margin_risk?.toLocaleString()}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            <style>{`.hover-row:hover { background: rgba(255,255,255,0.02); }`}</style>
+                            {(!p.high_return_skus || p.high_return_skus.length === 0) && (
+                                <div style={{ padding: '6rem', textAlign: 'center', color: 'var(--muted)', fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.05em' }}>
+                                    CORE SYSTEMS ANALYSIS: ZERO HIGH-RISK ANOMALIES DETECTED.
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'recommendations' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                            <div className="glass" style={{ padding: '2rem', background: 'var(--accent-soft)', borderColor: 'rgba(99,102,241,0.2)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent)' }} />
+                                    <h3 style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent)', letterSpacing: '0.1em' }}>AI Strategic Synthesis</h3>
+                                </div>
+                                <p style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 500, lineHeight: 1.6 }}>
+                                    LLM Intelligence has analyzed your return themes and revenue concentration. The following ranked actions prioritize contribution preservation and risk mitigation.
+                                </p>
+                            </div>
+
                             {actions.map((a, i) => (
                                 <motion.div
                                     key={i}
-                                    initial={{ opacity: 0, x: -20 }}
+                                    initial={{ opacity: 0, x: -10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: i * 0.1 }}
-                                    className="glass p-8 flex gap-8 group hover:bg-white/[0.02] transition-all cursor-default"
+                                    className="glass"
+                                    style={{ padding: '2rem', borderLeftWidth: '4px', borderLeftColor: (a.expected_impact === 'high' ? '#fff' : 'rgba(255,255,255,0.1)') }}
                                 >
-                                    <div className="w-16 h-16 rounded-[2rem] bg-white/5 flex items-center justify-center shrink-0 border border-white/5 group-hover:border-primary/20 transition-colors">
-                                        <span className="font-mono text-2xl font-black text-slate-600 group-hover:text-primary transition-colors">{i + 1}</span>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--muted)', fontFamily: 'var(--mono)' }}>0{i + 1}</span>
+                                            <h4 style={{ fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.02em' }}>{a.title}</h4>
+                                        </div>
+                                        <span style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.15em', padding: '4px 10px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', opacity: 0.8 }}>
+                                            {a.expected_impact} impact
+                                        </span>
                                     </div>
-                                    <div className="flex-grow">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <div>
-                                                <h4 className="font-black text-xl tracking-tight mb-1">{a.title}</h4>
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded ${a.expected_impact === 'high' ? 'bg-accent text-white' : 'bg-white/10 text-slate-400'}`}>
-                                                        {a.expected_impact} IMPACT
-                                                    </span>
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-600">•</span>
-                                                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">{a.action_type?.replace('_', ' ')}</span>
-                                                </div>
+                                    <p style={{ fontSize: '0.85rem', color: 'var(--muted)', lineHeight: 1.7, marginBottom: '2rem', fontWeight: 500 }}>
+                                        {a.why_it_matters}
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                                        {a.how_to_execute?.map((s, j) => (
+                                            <div key={j} style={{ fontSize: '0.7rem', fontWeight: 700, padding: '8px 16px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: '8px', color: '#fff' }}>
+                                                {s}
                                             </div>
-                                            <ArrowUpRight size={24} className="text-slate-800 group-hover:text-primary transition-colors" />
-                                        </div>
-                                        <p className="text-slate-400 text-sm leading-relaxed mb-6 font-medium">{a.why_it_matters}</p>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {a.how_to_execute?.slice(0, 2).map((s, j) => (
-                                                <div key={j} className="flex items-center gap-3 text-[11px] text-slate-200 font-bold bg-white/5 p-3 rounded-2xl border border-white/5">
-                                                    <CheckCircle2 size={14} className="text-primary" />
-                                                    {s}
-                                                </div>
-                                            ))}
-                                        </div>
+                                        ))}
                                     </div>
                                 </motion.div>
                             ))}
+
+                            {actions.length === 0 && (
+                                <div className="glass" style={{ padding: '6rem', textAlign: 'center' }}>
+                                    <p style={{ color: 'var(--muted)', fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', marginBottom: '2rem' }}>STRATEGIC DATA UNAVAILABLE</p>
+                                    <div style={{ maxWidth: '300px', margin: '0 auto', padding: '1.5rem', border: '1px dashed var(--border)', borderRadius: '12px' }}>
+                                        <p style={{ fontSize: '0.75rem', color: 'var(--muted)', lineHeight: 1.6 }}>Ensure your OpenAI API configuration is active to enable LLM synthesis for this dashboard.</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </motion.div>
             </AnimatePresence>
+        </div>
+    )
+}
 
-            <style>{`
-        .tracking-\\[0\\.3em\\] { letter-spacing: 0.3em; }
-        .min-h-\\[600px\\] { min-height: 600px; }
-        .rounded-\\[2rem\\] { border-radius: 2rem; }
-        .shadow-inner { box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); }
-        .text-3xl { font-size: 1.875rem; }
-        .p-10 { padding: 2.5rem; }
-        .h-72 { height: 18rem; }
-        .leading-none { line-height: 1; }
-        .shrink-0 { flex-shrink: 0; }
-        .text-slate-800 { color: #1e293b; }
-        .bg-white\\/\\[0\\.02\\] { background-color: rgba(255, 255, 255, 0.02); }
-      `}</style>
+function LuxuryMetric({ label, value, isNegative = false, highlight = false }) {
+    return (
+        <div className="glass" style={{ padding: '2rem', position: 'relative', overflow: 'hidden' }}>
+            <div style={{ fontSize: '0.6rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--muted)', letterSpacing: '0.15em', marginBottom: '0.75rem' }}>
+                {label}
+            </div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 700, color: isNegative ? 'var(--error)' : (highlight ? 'var(--accent)' : '#fff'), letterSpacing: '-0.03em' }}>
+                {value}
+            </div>
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)' }} />
         </div>
     )
 }

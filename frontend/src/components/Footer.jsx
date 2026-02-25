@@ -1,29 +1,26 @@
 export default function Footer() {
     return (
-        <footer className="py-12 border-t border-white/5 bg-black/40 backdrop-blur-3xl">
+        <footer style={{
+            padding: '4rem 0',
+            borderTop: '1px solid var(--border)',
+            marginTop: 'auto',
+            backgroundColor: 'rgba(0,0,0,0.5)'
+        }}>
             <div className="container">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="flex flex-col items-center md:items-start gap-2">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-slate-200">Margintel</h3>
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Autonomous Margin Intelligence Engine</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#fff' }}>Margintel</span>
+                        <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>Analytical Intelligence Platform</span>
                     </div>
 
-                    <div className="flex gap-10">
-                        <a href="/health" target="_blank" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary transition-colors">Infrastructure Status</a>
-                        <a href="https://github.com/mananpdev/Margintel" target="_blank" className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-primary transition-colors">Core Repository</a>
+                    <div style={{ display: 'flex', gap: '2rem' }}>
+                        <a href="/health" target="_blank" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textDecoration: 'none' }}>System Health</a>
+                        <a href="https://github.com/mananpdev/Margintel" target="_blank" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textDecoration: 'none' }}>Protocol</a>
                     </div>
 
-                    <div className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-                        &copy; 2026 Margintel Intel Layer
-                    </div>
+                    <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>&copy; 2026 Margintel Inc.</span>
                 </div>
             </div>
-            <style>{`
-        .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
-        .bg-black\\/40 { background-color: rgba(0, 0, 0, 0.4); }
-        .md\\:flex-row { flex-direction: row; }
-        .gap-10 { gap: 2.5rem; }
-      `}</style>
         </footer>
     )
 }

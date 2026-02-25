@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import './index.css'
-import Background from './components/Background'
 import Header from './components/Header'
 import UploadPanel from './components/UploadPanel'
 import ResultsPanel from './components/ResultsPanel'
@@ -18,28 +17,36 @@ export default function App() {
 
   const showToast = useCallback((msg, type = 'success') => {
     setToast({ msg, type })
-    setTimeout(() => setToast(null), 4000)
+    setTimeout(() => setToast(null), 5000)
   }, [])
 
   const runAnalysis = useCallback(async (formData) => {
     setLoading(true)
     setReport(null)
 
-    const steps = ['Initializing Core...', 'Inhaling Sequences...', 'Mapping Risks...', 'Simulating Fixes...', 'Finalizing Intel...']
-    let currentStep = 0
+    // Professional sequence labels
+    const auditSteps = [
+      'Synchronizing data streams',
+      'Executing contribution models',
+      'Correlating return signatures',
+      'Synthesizing LLM intelligence',
+      'Finalizing strategic report'
+    ]
+
+    let stepIdx = 0
     const interval = setInterval(() => {
       setProgress(prev => {
-        const nextPct = Math.min(prev.pct + (Math.random() * 8), 96)
-        if (nextPct > (currentStep + 1) * 20 && currentStep < steps.length - 1) {
-          currentStep++
+        const nextPct = Math.min(prev.pct + (Math.random() * 4), 99)
+        if (nextPct > (stepIdx + 1) * 20 && stepIdx < auditSteps.length - 1) {
+          stepIdx++
         }
-        return { pct: nextPct, label: steps[currentStep] }
+        return { pct: nextPct, label: auditSteps[stepIdx] }
       })
-    }, 300)
+    }, 500)
 
     try {
       const resp = await fetch(`${API}/v1/runs`, { method: 'POST', body: formData })
-      if (!resp.ok) throw new Error('Sequence break detected')
+      if (!resp.ok) throw new Error('Data processing interface returned an error')
 
       const data = await resp.json()
       const reportResp = await fetch(`${API}/v1/runs/${data.run_id}`)
@@ -47,11 +54,11 @@ export default function App() {
       const fullReport = reportData.report || reportData
 
       clearInterval(interval)
-      setProgress({ pct: 100, label: 'Sync Complete' })
+      setProgress({ pct: 100, label: 'Optimization complete' })
 
       setReport(fullReport)
       setHistory(prev => [{ id: data.run_id, time: new Date(), report: fullReport }, ...prev])
-      showToast('Neural sync complete')
+      showToast('Neural intelligence synthesis complete')
     } catch (err) {
       clearInterval(interval)
       showToast(err.message, 'error')
@@ -62,78 +69,115 @@ export default function App() {
   }, [showToast])
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Background />
+    <div className="flex flex-col min-h-screen relative overflow-hidden">
+      <div className="million-dollar-bg" />
+      <div className="grid-overlay" />
+
       <Header />
 
-      <main className="container flex-grow py-12">
-        <header className="mb-12">
+      <main className="container flex-grow py-24 relative z-10">
+        {/* Luxury Hero */}
+        <section style={{ marginBottom: '6rem', textAlign: 'center' }}>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-3 mb-4"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '6px 14px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              borderRadius: '999px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              color: 'var(--muted)',
+              marginBottom: '2rem'
+            }}
           >
-            <div className="px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-[10px] font-black uppercase tracking-widest text-teal-400">
-              System v0.1
-            </div>
-            <div className="h-px flex-grow bg-white/5" />
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
+            Enterprise Strategic Intelligence v0.1
           </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
+
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl font-black tracking-tighter mb-4"
+            transition={{ delay: 0.1, duration: 0.8 }}
+            className="text-gradient"
           >
-            Margin Command Center
-          </motion.h2>
+            The future of <br /> margin intelligence.
+          </motion.h1>
+
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-slate-500 max-w-2xl text-lg leading-relaxed"
+            transition={{ delay: 0.2, duration: 0.8 }}
+            style={{
+              color: 'var(--muted)',
+              fontSize: '1.25rem',
+              maxWidth: '36rem',
+              margin: '2rem auto 0',
+              fontWeight: 400,
+              lineHeight: 1.6
+            }}
           >
-            Inject your logistical data streams to identify margin leakages and generate autonomous business optimization strategies.
+            Synthesize your transactional data with LLM-powered strategic forecasting to identify, secure, and grow your contribution margin.
           </motion.p>
-        </header>
+        </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div className="lg:col-span-4 space-y-6">
+        {/* Tactical Interaction Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '4rem', alignItems: 'start' }}>
+          <aside style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <UploadPanel onSubmit={runAnalysis} loading={loading} progress={progress} />
 
             <AnimatePresence>
               {history.length > 0 && (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="glass p-8"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="glass"
+                  style={{ padding: '2rem' }}
                 >
-                  <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-6">Archive Index</h3>
-                  <div className="space-y-3">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <h3 style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--muted)', letterSpacing: '0.1em' }}>
+                      Historical Index
+                    </h3>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--muted)', fontWeight: 600 }}>{history.length} ITEMS</div>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     {history.map((h) => (
                       <button
                         key={h.id}
                         onClick={() => setReport(h.report)}
-                        className={`w-full text-left p-4 rounded-2xl transition-all relative overflow-hidden group ${report?.run_id === h.id
-                            ? 'bg-teal-500/10 text-teal-400'
-                            : 'bg-white/5 text-slate-400 hover:bg-white/10'
-                          }`}
+                        style={{
+                          width: '100%',
+                          textAlign: 'left',
+                          padding: '1rem',
+                          borderRadius: '10px',
+                          background: report?.run_id === h.id ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.01)',
+                          border: `1px solid ${report?.run_id === h.id ? 'var(--border-strong)' : 'transparent'}`,
+                          color: report?.run_id === h.id ? '#fff' : 'var(--muted)',
+                          fontSize: '0.8rem',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
                       >
-                        {report?.run_id === h.id && <motion.div layoutId="active-run" className="absolute left-0 top-0 w-1 h-full bg-teal-500" />}
-                        <div className="flex justify-between items-center relative z-10">
-                          <span className="font-mono text-[11px] font-bold">{h.id.slice(0, 16)}</span>
-                          <span className="text-[10px] opacity-40">{h.time.toLocaleTimeString()}</span>
-                        </div>
+                        <span style={{ fontFamily: 'var(--mono)', fontWeight: 600 }}>{h.id.slice(0, 16).toUpperCase()}</span>
+                        <span style={{ opacity: 0.4, fontSize: '0.65rem', fontWeight: 700 }}>{h.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                       </button>
                     ))}
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </aside>
 
-          <div className="lg:col-span-8">
-            <ResultsPanel report={report} />
-          </div>
+          <ResultsPanel report={report} />
         </div>
       </main>
 
@@ -142,83 +186,42 @@ export default function App() {
       <AnimatePresence>
         {toast && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className={`fixed bottom-12 right-12 px-8 py-4 rounded-2xl shadow-2xl z-[1000] flex items-center gap-4 backdrop-blur-xl border ${toast.type === 'error' ? 'bg-rose-500/20 border-rose-500/40 text-rose-200' : 'bg-teal-500/20 border-teal-500/40 text-teal-200'
-              }`}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            style={{
+              position: 'fixed',
+              top: '6rem',
+              right: '2rem',
+              padding: '12px 20px',
+              borderRadius: '8px',
+              background: toast.type === 'error' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+              backdropFilter: 'blur(20px)',
+              color: toast.type === 'error' ? '#fff' : '#000',
+              fontWeight: 700,
+              fontSize: '0.75rem',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+              zIndex: 1000,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              border: `1px solid ${toast.type === 'error' ? 'rgba(255,255,255,0.2)' : 'transparent'}`
+            }}
           >
-            <div className={`w-2 h-2 rounded-full ${toast.type === 'error' ? 'bg-rose-500' : 'bg-teal-500'} animate-pulse`} />
-            <span className="font-bold text-sm tracking-tight">{toast.msg}</span>
+            {toast.msg}
           </motion.div>
         )}
       </AnimatePresence>
 
       <style>{`
-        .grid { display: grid; }
-        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-        .lg\\:grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-        .lg\\:col-span-4 { grid-column: span 4 / span 4; }
-        .lg\\:col-span-8 { grid-column: span 8 / span 8; }
-        .gap-8 { gap: 2rem; }
-        .gap-6 { gap: 1.5rem; }
-        .space-y-6 > * + * { margin-top: 1.5rem; }
-        .space-y-3 > * + * { margin-top: 0.75rem; }
-        .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
-        .p-8 { padding: 2rem; }
-        .p-4 { padding: 1rem; }
-        .mb-12 { margin-bottom: 3rem; }
-        .mb-4 { margin-bottom: 1rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .bottom-12 { bottom: 3rem; }
-        .right-12 { right: 3rem; }
-        .w-full { width: 100%; }
-        .text-left { text-align: left; }
-        .text-5xl { font-size: 3rem; line-height: 1; }
-        .text-lg { font-size: 1.125rem; }
-        .text-teal-400 { color: #2DD4BF; }
-        .bg-teal-500\\/10 { background-color: rgba(45, 212, 191, 0.1); }
-        .border-teal-500\\/20 { border-color: rgba(45, 212, 191, 0.2); }
-        .font-black { font-weight: 900; }
-        .font-bold { font-weight: 700; }
-        .font-mono { font-family: var(--mono); }
-        .uppercase { text-transform: uppercase; }
-        .tracking-widest { letter-spacing: 0.1em; }
-        .tracking-tight { letter-spacing: -0.025em; }
-        .tracking-tighter { letter-spacing: -0.05em; }
-        .tracking-\\[0\\.2em\\] { letter-spacing: 0.2em; }
-        .leading-relaxed { line-height: 1.625; }
-        .transition-all { transition-property: all; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
-        .backdrop-blur-xl { backdrop-filter: blur(24px); }
         .flex { display: flex; }
         .flex-col { flex-direction: column; }
+        .min-h-screen { min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
         .flex-grow { flex-grow: 1; }
-        .items-center { align-items: center; }
-        .items-start { align-items: flex-start; }
-        .justify-between { justify-content: space-between; }
-        .relative { position: relative; }
-        .absolute { position: absolute; }
-        .left-0 { left: 0; }
-        .top-0 { top: 0; }
-        .inset-0 { inset: 0; }
-        .z-10 { z-index: 10; }
-        .z-\\[1000\\] { z-index: 1000; }
-        .overflow-hidden { overflow: hidden; }
-        .rounded-2xl { border-radius: 1rem; }
-        .rounded-full { border-radius: 9999px; }
-        .border { border-width: 1px; }
-        .border-rose-500\\/40 { border-color: rgba(244, 63, 94, 0.4); }
-        .bg-rose-500\\/20 { background-color: rgba(244, 63, 94, 0.2); }
-        .text-rose-200 { color: #FECDD3; }
-        .bg-teal-500\\/20 { background-color: rgba(45, 212, 191, 0.2); }
-        .bg-rose-500 { background-color: #F43F5E; }
-        .bg-teal-500 { background-color: #14B8A6; }
-        .border-teal-500\\/40 { border-color: rgba(20, 184, 166, 0.4); }
-        .text-teal-200 { color: #99F6E4; }
-        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: .5; }
+        .py-24 { padding-top: 6rem; padding-bottom: 6rem; }
+        @media (max-width: 1100px) {
+          main > div { grid-template-columns: 1fr !important; }
+          h1 { font-size: 3rem !important; }
         }
       `}</style>
     </div>

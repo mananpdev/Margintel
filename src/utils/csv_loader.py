@@ -21,8 +21,8 @@ from src.utils.validators import validate_orders, validate_returns, ValidationEr
 
 # Maps our internal keys to common synonyms found in Shopify, Amazon, WooCommerce, etc.
 SYNONYMS = {
-    "sku": ["product_sku", "item_id", "product_id", "variant_sku", "article_number", "sku_id", "product_ref"],
-    "order_id": ["order_number", "transaction_id", "reference", "ref", "order_no", "order_id", "id"],
+    "sku": ["product_sku", "item_id", "product_id", "variant_sku", "article_number", "sku_id", "product_ref", "stockcode"],
+    "order_id": ["order_number", "transaction_id", "reference", "ref", "order_no", "order_id", "id", "invoiceno"],
     "quantity": ["qty", "units", "count", "quantity_ordered", "amount_sold", "units_sold"],
     "item_price": ["price", "unit_price", "base_price", "selling_price", "mrp", "item_cost"],
     "order_date": ["date", "created_at", "transaction_date", "timestamp", "sold_at"],

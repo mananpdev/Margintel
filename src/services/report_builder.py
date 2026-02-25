@@ -25,8 +25,14 @@ def build_report(
     Compose the final report matching the output contract.
     """
 
-    # Clean internal keys from profiling
+    # Clean internal keys from profiling, but keep sku_revenue for charts
     clean_profiling = {k: v for k, v in profiling.items() if not k.startswith("_")}
+    # Expose per-SKU revenue for frontend visualisation
+    sku_rev = profiling.get("_sku_revenue", {})
+    if sku_rev:
+        clean_profiling["sku_revenue_breakdown"] = {
+            str(k): round(float(v), 2) for k, v in sku_rev.items()
+        }
 
     report = {
         "run_id": run_id,

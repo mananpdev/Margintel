@@ -1,195 +1,146 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Upload, FileSpreadsheet, Loader2, Zap, AlertCircle } from 'lucide-react'
-
-function DropZone({ id, label, required, icon, accept, onFile, file }) {
-    const [drag, setDrag] = useState(false)
-    const [preview, setPreview] = useState(null)
-    const inputRef = useRef()
-
-    const handleFile = useCallback((f) => {
-        onFile(f)
-        const reader = new FileReader()
-        reader.onload = e => {
-            const lines = e.target.result.split('\n').slice(0, 3)
-            setPreview(lines.join('\n'))
-        }
-        reader.readAsText(f.slice(0, 2000))
-    }, [onFile])
-
-    return (
-        <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--text-2)', marginBottom: 7, letterSpacing: .5, textTransform: 'uppercase' }}>
-                {label} {required ? <span style={{ color: 'var(--red)' }}>*</span> : <span style={{ color: 'var(--text-3)', fontWeight: 400, fontSize: 10, textTransform: 'none' }}>(optional)</span>}
-            </label>
-            <motion.div
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                onDragOver={e => { e.preventDefault(); setDrag(true) }}
-                onDragLeave={() => setDrag(false)}
-                onDrop={e => { e.preventDefault(); setDrag(false); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]) }}
-                onClick={() => inputRef.current?.click()}
-                style={{
-                    border: `2px dashed ${file ? 'var(--green)' : drag ? 'var(--accent)' : 'var(--glass-border)'}`,
-                    borderStyle: file ? 'solid' : 'dashed',
-                    borderRadius: 10, padding: file ? '16px' : '22px 14px',
-                    textAlign: 'center', cursor: 'pointer',
-                    background: file ? 'var(--green-dim)' : drag ? 'rgba(99,132,255,.03)' : 'var(--bg-1)',
-                    transition: 'all .25s',
-                    position: 'relative',
-                }}
-            >
-                <input ref={inputRef} type="file" accept={accept} style={{ display: 'none' }}
-                    onChange={e => e.target.files[0] && handleFile(e.target.files[0])} />
-                {!file ? (
-                    <>
-                        <div style={{ fontSize: 24, marginBottom: 4 }}>{icon}</div>
-                        <div style={{ fontSize: 12, color: 'var(--text-2)' }}><b style={{ color: 'var(--accent)' }}>Click</b> or drag file here</div>
-                    </>
-                ) : (
-                    <>
-                        <div style={{ fontSize: 12, color: 'var(--green)', fontWeight: 600 }}>
-                            ✓ {file.name} ({(file.size / 1024).toFixed(1)} KB)
-                        </div>
-                        <AnimatePresence>
-                            {preview && (
-                                <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: 'auto', opacity: 1 }}
-                                    style={{
-                                        marginTop: 8, textAlign: 'left', fontFamily: 'var(--mono)',
-                                        fontSize: 10, color: 'var(--text-3)', lineHeight: 1.6,
-                                        background: 'rgba(0,0,0,.25)', borderRadius: 6, padding: '8px 10px',
-                                        maxHeight: 70, overflow: 'hidden',
-                                    }}
-                                >
-                                    {preview}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </>
-                )}
-            </motion.div>
-        </div>
-    )
-}
+import { Upload, FileText, CheckCircle2, ChevronRight, Settings } from 'lucide-react'
 
 export default function UploadPanel({ onSubmit, loading, progress }) {
-    const [ordersFile, setOrdersFile] = useState(null)
-    const [returnsFile, setReturnsFile] = useState(null)
-    const [goal, setGoal] = useState('Identify margin risks and prioritize fixes')
-    const [constraints, setConstraints] = useState('')
+    const [orders, setOrders] = useState(null)
+    const [returns, setReturns] = useState(null)
+    const inputRef = useRef()
+    const returnRef = useRef()
+
+    const handleDrag = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (!ordersFile) return
+        if (!orders) return
         const fd = new FormData()
-        fd.append('orders_file', ordersFile)
-        if (returnsFile) fd.append('returns_file', returnsFile)
-        fd.append('business_goal', goal)
-        fd.append('constraints', constraints)
+        fd.append('orders_file', orders)
+        if (returns) fd.append('returns_file', returns)
         onSubmit(fd)
     }
 
     return (
         <motion.div
-            initial={{ x: -30, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 120 }}
-            className="glass"
-            style={{ padding: 26 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="glass p-8 relative overflow-hidden"
         >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-                <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(99,132,255,.12)', display: 'grid', placeItems: 'center' }}>
-                    <Upload size={16} color="var(--accent)" />
-                </div>
-                <h3 style={{ fontSize: 16, fontWeight: 700 }}>Upload Data</h3>
+            <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
+
+            <div className="flex items-center justify-between mb-8">
+                <h2 className="text-lg font-bold">Configure Analysis</h2>
+                <Settings size={18} className="text-slate-500" />
             </div>
-            <p style={{ color: 'var(--text-3)', fontSize: 12, marginBottom: 20 }}>
-                Provide orders CSV and optionally returns CSV for deeper analysis.
-            </p>
 
-            <form onSubmit={handleSubmit}>
-                <DropZone id="orders" label="Orders CSV" required icon="📊" accept=".csv" file={ordersFile} onFile={setOrdersFile} />
-                <DropZone id="returns" label="Returns CSV" icon="🔄" accept=".csv" file={returnsFile} onFile={setReturnsFile} />
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase text-slate-500 tracking-[0.2em]">Source Infrastructure</label>
 
-                <div style={{ marginBottom: 16 }}>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--text-2)', marginBottom: 7, letterSpacing: .5, textTransform: 'uppercase' }}>
-                        Business Goal <span style={{ color: 'var(--text-3)', fontWeight: 400, fontSize: 10, textTransform: 'none' }}>(optional)</span>
-                    </label>
-                    <input
-                        type="text" value={goal} onChange={e => setGoal(e.target.value)}
-                        placeholder="Identify margin risks and prioritize fixes"
-                        style={{
-                            width: '100%', padding: '11px 14px', borderRadius: 6,
-                            border: '1px solid var(--glass-border)', background: 'var(--bg-1)',
-                            color: 'var(--text-1)', fontFamily: 'var(--font)', fontSize: 13,
-                            outline: 'none', transition: 'all .2s',
+                    {/* Orders Upload */}
+                    <div
+                        onClick={() => inputRef.current.click()}
+                        onDragOver={handleDrag}
+                        onDrop={(e) => {
+                            handleDrag(e)
+                            setOrders(e.dataTransfer.files[0])
                         }}
-                        onFocus={e => e.target.style.borderColor = 'var(--accent)'}
-                        onBlur={e => e.target.style.borderColor = 'var(--glass-border)'}
-                    />
+                        className={`group h-32 rounded-2xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${orders ? 'border-primary/40 bg-primary/5' : 'border-white/5 hover:border-white/10 hover:bg-white/5'
+                            }`}
+                    >
+                        <input
+                            ref={inputRef} type="file" className="hidden"
+                            onChange={(e) => setOrders(e.target.files[0])}
+                        />
+                        {orders ? (
+                            <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="text-center">
+                                <CheckCircle2 size={32} className="text-primary mx-auto mb-2" />
+                                <p className="text-xs font-medium text-slate-300">{orders.name}</p>
+                            </motion.div>
+                        ) : (
+                            <>
+                                <div className="p-3 rounded-full bg-white/5 group-hover:bg-primary/10 transition-colors">
+                                    <Upload size={20} className="text-slate-500 group-hover:text-primary transition-colors" />
+                                </div>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Connect Orders CSV</p>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Returns Upload */}
+                    <div
+                        onClick={() => returnRef.current.click()}
+                        onDragOver={handleDrag}
+                        onDrop={(e) => {
+                            handleDrag(e)
+                            setReturns(e.dataTransfer.files[0])
+                        }}
+                        className={`group h-24 rounded-2xl border border-dashed transition-all cursor-pointer flex items-center px-6 gap-4 ${returns ? 'border-primary/40 bg-primary/5' : 'border-white/5 hover:border-white/10 hover:bg-white/5'
+                            }`}
+                    >
+                        <input
+                            ref={returnRef} type="file" className="hidden"
+                            onChange={(e) => setReturns(e.target.files[0])}
+                        />
+                        <div className={`p-2 rounded-lg ${returns ? 'bg-primary/20' : 'bg-white/5'}`}>
+                            <FileText size={16} className={returns ? 'text-primary' : 'text-slate-500'} />
+                        </div>
+                        <div className="flex-grow">
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Returns Data</p>
+                            <p className="text-[10px] text-slate-500">{returns ? returns.name : 'Optional supplementation'}</p>
+                        </div>
+                        {returns && <CheckCircle2 size={16} className="text-primary" />}
+                    </div>
                 </div>
 
-                <div style={{ marginBottom: 20 }}>
-                    <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: 'var(--text-2)', marginBottom: 7, letterSpacing: .5, textTransform: 'uppercase' }}>
-                        Constraints <span style={{ color: 'var(--text-3)', fontWeight: 400, fontSize: 10, textTransform: 'none' }}>(optional)</span>
-                    </label>
-                    <input
-                        type="text" value={constraints} onChange={e => setConstraints(e.target.value)}
-                        placeholder="e.g., 2-week sprint, no new tools"
-                        style={{
-                            width: '100%', padding: '11px 14px', borderRadius: 6,
-                            border: '1px solid var(--glass-border)', background: 'var(--bg-1)',
-                            color: 'var(--text-1)', fontFamily: 'var(--font)', fontSize: 13,
-                            outline: 'none', transition: 'all .2s',
-                        }}
-                        onFocus={e => e.target.style.borderColor = 'var(--accent)'}
-                        onBlur={e => e.target.style.borderColor = 'var(--glass-border)'}
-                    />
-                </div>
-
-                <motion.button
-                    whileHover={{ y: -2, boxShadow: '0 12px 32px rgba(99,132,255,.35)' }}
-                    whileTap={{ y: 0 }}
-                    disabled={loading || !ordersFile}
-                    type="submit"
-                    style={{
-                        width: '100%', padding: '14px 24px', border: 'none', borderRadius: 10,
-                        background: 'var(--grad)', color: '#fff', fontFamily: 'var(--font)',
-                        fontSize: 15, fontWeight: 700, cursor: loading || !ordersFile ? 'not-allowed' : 'pointer',
-                        opacity: loading || !ordersFile ? .5 : 1, letterSpacing: .3,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    }}
+                <button
+                    disabled={!orders || loading}
+                    className={`w-full h-14 rounded-2xl flex items-center justify-between px-8 font-bold transition-all ${!orders || loading
+                            ? 'bg-white/5 text-slate-600 grayscale'
+                            : 'bg-primary text-black shadow-[0_0_30px_rgba(45,212,191,0.2)] hover:scale-[1.02] active:scale-[0.98]'
+                        }`}
                 >
-                    {loading ? <Loader2 size={16} style={{ animation: 'spin .7s linear infinite' }} /> : <Zap size={16} />}
-                    {loading ? 'Analyzing…' : 'Run Analysis'}
-                </motion.button>
+                    <span className="uppercase tracking-widest text-[11px]">Initiate Neural Sync</span>
+                    <ChevronRight size={18} />
+                </button>
             </form>
 
             <AnimatePresence>
                 {progress.pct > 0 && (
                     <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        style={{ marginTop: 16, overflow: 'hidden' }}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mt-8 pt-8 border-t border-white/5"
                     >
-                        <div style={{ height: 4, background: 'var(--glass-border)', borderRadius: 4, overflow: 'hidden' }}>
+                        <div className="flex justify-between items-end mb-3">
+                            <span className="text-[10px] font-black uppercase text-primary tracking-widest">{progress.label}</span>
+                            <span className="text-[10px] font-mono text-slate-500">{Math.round(progress.pct)}%</span>
+                        </div>
+                        <div className="h-1 bg-white/5 rounded-full overflow-hidden">
                             <motion.div
+                                className="h-full bg-primary shadow-[0_0_10px_var(--primary)]"
                                 animate={{ width: `${progress.pct}%` }}
-                                transition={{ duration: 0.5, ease: 'easeOut' }}
-                                style={{ height: '100%', background: 'var(--grad)', borderRadius: 4 }}
                             />
                         </div>
-                        <p style={{ fontSize: 11, color: 'var(--text-3)', marginTop: 6, textAlign: 'center' }}>
-                            {progress.label}
-                        </p>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            <style>{`@keyframes spin { 100% { transform: rotate(360deg) } }`}</style>
+            <style>{`
+        .h-32 { height: 8rem; }
+        .h-24 { height: 6rem; }
+        .h-14 { height: 3.5rem; }
+        .border-dashed { border-style: dashed; }
+        .border-2 { border-width: 2px; }
+        .grayscale { filter: grayscale(100%); }
+        .tracking-\\[0\\.2em\\] { letter-spacing: 0.2em; }
+        .leading-none { line-height: 1; }
+        .pt-8 { padding-top: 2rem; }
+        .shadow-\\[0_0_10px_var\\(--primary\\)\\] { box-shadow: 0 0 10px #2DD4BF; }
+      `}</style>
         </motion.div>
     )
 }

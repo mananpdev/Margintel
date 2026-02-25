@@ -1,73 +1,66 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Zap, Wifi, WifiOff } from 'lucide-react'
+import { Zap, Activity, ShieldAlert } from 'lucide-react'
 
 export default function Header() {
     const [health, setHealth] = useState(null)
 
     useEffect(() => {
-        const check = async () => {
+        const fetchHealth = async () => {
             try {
                 const r = await fetch('/health')
                 const d = await r.json()
                 setHealth(d)
             } catch { setHealth(null) }
         }
-        check()
-        const i = setInterval(check, 30000)
+        fetchHealth()
+        const i = setInterval(fetchHealth, 10000)
         return () => clearInterval(i)
     }, [])
 
-    const online = health?.ok
-    const llm = health?.llm_available
-
     return (
-        <motion.header
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            style={{
-                padding: '14px 0',
-                borderBottom: '1px solid var(--glass-border)',
-                backdropFilter: 'blur(24px)',
-                WebkitBackdropFilter: 'blur(24px)',
-                position: 'sticky', top: 0, zIndex: 100,
-                background: 'rgba(4,6,12,.85)',
-            }}
-        >
-            <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                    <div style={{
-                        width: 42, height: 42, borderRadius: 12,
-                        background: 'var(--grad)', display: 'grid', placeItems: 'center',
-                        fontSize: 18, boxShadow: '0 0 30px rgba(99,132,255,.3)',
-                        position: 'relative', overflow: 'hidden',
-                    }}>
-                        <Zap size={20} color="white" strokeWidth={2.5} />
-                        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,rgba(255,255,255,.15) 0%,transparent 60%)' }} />
+        <header className="h-[var(--nav-height)] border-b border-white/5 backdrop-blur-md sticky top-0 z-[100] bg-black/20">
+            <div className="container h-full flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-[0_0_20px_rgba(45,212,191,0.3)]">
+                        <Zap size={22} className="text-black fill-black" strokeWidth={1.5} />
                     </div>
                     <div>
-                        <h1 style={{ fontSize: 19, fontWeight: 800, letterSpacing: -.6 }}>Margintel</h1>
-                        <span style={{ fontSize: 10, color: 'var(--text-3)', fontWeight: 600, letterSpacing: 1.8, textTransform: 'uppercase' }}>Intelligence Engine</span>
+                        <h1 className="text-xl font-black tracking-tighter">Margintel</h1>
+                        <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Intelligence Layer 0.1</p>
                     </div>
                 </div>
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    style={{
-                        display: 'flex', alignItems: 'center', gap: 8,
-                        padding: '6px 16px', borderRadius: 999,
-                        fontSize: 12, fontWeight: 600,
-                        border: `1px solid ${online ? 'rgba(74,222,128,.35)' : 'rgba(251,113,133,.35)'}`,
-                        color: online ? 'var(--green)' : 'var(--red)',
-                        background: 'var(--glass)',
-                        backdropFilter: 'blur(8px)',
-                    }}
-                >
-                    {online ? <Wifi size={14} /> : <WifiOff size={14} />}
-                    {online ? (llm ? 'Online · LLM Active' : 'Online · No LLM') : 'Offline'}
-                </motion.div>
+
+                <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-3 px-4 py-2 rounded-full border border-white/5 bg-white/5">
+                        <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${health?.ok ? 'bg-primary' : 'bg-accent'}`} />
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            {health?.ok ? (health?.llm_available ? 'Engine Ready' : 'Core Only') : 'Offline'}
+                        </span>
+                    </div>
+                </div>
             </div>
-        </motion.header>
+            <style>{`
+        .h-\\[var\\(--nav-height\\)\\] { height: var(--nav-height); }
+        .h-full { height: 100%; }
+        .border-b { border-bottom-width: 1px; }
+        .border-white\\/5 { border-color: rgba(255, 255, 255, 0.05); }
+        .backdrop-blur-md { backdrop-filter: blur(12px); }
+        .bg-black\\/20 { background-color: rgba(0, 0, 0, 0.2); }
+        .text-xl { font-size: 1.25rem; }
+        .font-black { font-weight: 900; }
+        .tracking-tighter { letter-spacing: -0.05em; }
+        .tracking-wider { letter-spacing: 0.05em; }
+        .text-black { color: black; }
+        .fill-black { fill: black; }
+        .w-10 { width: 2.5rem; }
+        .h-10 { height: 2.5rem; }
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: .5; }
+        }
+      `}</style>
+        </header>
     )
 }

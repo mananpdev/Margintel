@@ -157,7 +157,7 @@ def _placeholder_decision() -> dict[str, Any]:
                 "rank": 1,
                 "action_type": "further_analysis",
                 "title": "Configure OpenAI API key to enable LLM-powered action ranking",
-                "why_it_matters": "Without an LLM, the engine can only provide deterministic metrics.",
+                "why_it_matters": "Without an LLM, Margintel can only provide deterministic metrics.",
                 "how_to_execute": [
                     "Set OPENAI_API_KEY in your .env file",
                     "Restart the server",

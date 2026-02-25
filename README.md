@@ -16,9 +16,10 @@ This separation is what makes it **not** a ChatGPT wrapper.
 
 ## 🚀 Quick Start
 
-### 1. Install Dependencies
-
+### 1. Clone & Install
 ```bash
+git clone https://github.com/mananpdev/Margintel.git
+cd Margintel
 pip install -r requirements.txt
 ```
 

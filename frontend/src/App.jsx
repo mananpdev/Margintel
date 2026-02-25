@@ -86,68 +86,24 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen relative overflow-hidden bg-black">
-      {/* ── Enhanced Interactive Background ── */}
+      {/* ── Interactive Background Layer ── */}
       <div className="million-dollar-bg" />
       <div className="grid-overlay" />
 
-      {/* Drifting Aurora Orbs */}
-      <motion.div
-        animate={{
-          x: [0, 100, 0],
-          y: [0, -50, 0],
-          scale: [1, 1.2, 1],
-          opacity: [0.1, 0.15, 0.1]
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        style={{
-          position: 'fixed',
-          top: '10%',
-          left: '10%',
-          width: '600px',
-          height: '600px',
-          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%)',
-          borderRadius: '50%',
-          filter: 'blur(80px)',
-          zIndex: -1,
-          pointerEvents: 'none'
-        }}
-      />
-      <motion.div
-        animate={{
-          x: [0, -80, 0],
-          y: [0, 120, 0],
-          scale: [1, 1.1, 1],
-          opacity: [0.05, 0.1, 0.05]
-        }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        style={{
-          position: 'fixed',
-          bottom: '10%',
-          right: '10%',
-          width: '700px',
-          height: '700px',
-          background: 'radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%)',
-          borderRadius: '50%',
-          filter: 'blur(100px)',
-          zIndex: -1,
-          pointerEvents: 'none'
-        }}
-      />
-
-      {/* Reactive Cursor Spotlight (Subtle) */}
+      {/* Dynamic Cursor Spotlight */}
       <motion.div
         style={{
           position: 'fixed',
-          width: '1000px',
-          height: '1000px',
-          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%)',
+          width: '800px',
+          height: '800px',
+          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%)',
           borderRadius: '50%',
           left: springX,
           top: springY,
           transform: 'translate(-50%, -50%)',
           zIndex: -1,
           pointerEvents: 'none',
-          filter: 'blur(60px)'
+          filter: 'blur(40px)'
         }}
       />
 
@@ -183,9 +139,6 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.8 }}
             className="text-gradient"
-            style={{
-              animation: 'float 6s ease-in-out infinite'
-            }}
           >
             The future of <br /> margin intelligence.
           </motion.h1>

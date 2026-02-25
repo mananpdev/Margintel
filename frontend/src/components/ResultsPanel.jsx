@@ -12,11 +12,11 @@ export default function ResultsPanel({ report }) {
             <div className="glass" style={{ height: '100%', minHeight: '480px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.01)', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.03), transparent 70%)' }} />
                 <motion.div
-                    animate={{ opacity: [0.2, 0.4, 0.2] }}
+                    animate={{ opacity: [0.3, 0.5, 0.3] }}
                     transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                     style={{
-                        width: '100px',
-                        height: '100px',
+                        width: '120px',
+                        height: '120px',
                         borderRadius: '50%',
                         border: '1px solid var(--border)',
                         display: 'flex',
@@ -26,12 +26,12 @@ export default function ResultsPanel({ report }) {
                         background: 'rgba(255,255,255,0.02)'
                     }}
                 >
-                    <div style={{ width: '24px', height: '1px', background: 'var(--border)' }} />
-                    <div style={{ width: '1px', height: '24px', background: 'var(--border)', position: 'absolute' }} />
+                    <div style={{ width: '30px', height: '1px', background: 'var(--border)' }} />
+                    <div style={{ width: '1px', height: '30px', background: 'var(--border)', position: 'absolute' }} />
                 </motion.div>
 
                 <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', marginBottom: '0.75rem' }}>
+                    <h3 style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.25em', color: '#fff', marginBottom: '0.75rem' }}>
                         Ready for Analysis
                     </h3>
                     <p style={{ fontSize: '0.7rem', color: 'var(--muted)', maxWidth: '240px', margin: '0 auto', lineHeight: 1.5, fontWeight: 500 }}>
@@ -76,7 +76,7 @@ export default function ResultsPanel({ report }) {
                         {activeTab === t && (
                             <motion.div
                                 layoutId="active-indicator"
-                                style={{ position: 'absolute', bottom: '-1.375rem', left: 0, right: 0, height: '2px', background: 'var(--accent)' }}
+                                style={{ position: 'absolute', bottom: '-1.375rem', left: 0, right: 0, height: '1px', background: '#fff' }}
                             />
                         )}
                     </button>

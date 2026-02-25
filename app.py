@@ -45,8 +45,8 @@ llm = LLMClient()
 
 @app.get("/")
 def index():
-    """API root — redirects to health check."""
-    return jsonify({"name": "Margintel Intelligence Engine", "version": "0.1", "docs": "/health"})
+    """API root — directs users to the React frontend."""
+    return jsonify({"api": "Margin Intelligence Engine v0.1", "ui": "http://localhost:5173"})
 
 
 @app.get("/health")

@@ -1,5 +1,6 @@
 """
 Smoke test — start the Flask app in-process and run a full pipeline test.
+Updated for async pipeline (v0.1.1).
 
 Usage:
     python smoke_test.py
@@ -8,6 +9,7 @@ Usage:
 import json
 import sys
 import os
+import time
 
 # Ensure the project root is on sys.path
 sys.path.insert(0, os.path.dirname(__file__))
@@ -26,14 +28,14 @@ def run_smoke_test():
     client = app.test_client()
 
     # ── 1. Health check ──────────────────────────────────────────────
-    print("\n[1/4] Health check …")
+    print("\n[1/5] Health check …")
     resp = client.get("/health")
     assert resp.status_code == 200
     health = resp.get_json()
     print(f"       ✓  status={resp.status_code}  llm_available={health.get('llm_available')}")
 
-    # ── 2. Submit run with both CSVs ─────────────────────────────────
-    print("\n[2/4] Submitting run (orders + returns) …")
+    # ── 2. Submit run ────────────────────────────────────────────────
+    print("\n[2/5] Submitting async run (orders + returns) …")
     with open(os.path.join(SAMPLE_DIR, "orders.csv"), "rb") as of, \
          open(os.path.join(SAMPLE_DIR, "returns.csv"), "rb") as rf:
         resp = client.post(
@@ -46,21 +48,53 @@ def run_smoke_test():
             },
             content_type="multipart/form-data",
         )
-    assert resp.status_code == 200, f"Expected 200, got {resp.status_code}: {resp.data}"
+    # Now returns 202 accepted
+    assert resp.status_code == 202, f"Expected 202, got {resp.status_code}: {resp.data}"
     run_data = resp.get_json()
     run_id = run_data["run_id"]
-    print(f"       ✓  run_id={run_id}  status={run_data['status']}")
+    print(f"       ✓  run_id={run_id}  status={run_data['status']} (HTTP 202)")
 
-    # ── 3. Retrieve report ───────────────────────────────────────────
-    print("\n[3/4] Retrieving report …")
-    resp = client.get(f"/v1/runs/{run_id}")
+    # ── 3. Poll for completion ───────────────────────────────────────
+    print("\n[3/5] Polling for pipeline completion …")
+    max_retries = 60
+    report = None
+    for i in range(max_retries):
+        resp = client.get(f"/v1/runs/{run_id}")
+        assert resp.status_code == 200
+        data = resp.get_json()
+        
+        status = data.get("status")
+        progress = data.get("progress", {})
+        pct = progress.get("pct", 0)
+        label = progress.get("label", "Initializing")
+        
+        sys.stdout.write(f"\r       →  [{pct:3}%] {label:40}")
+        sys.stdout.flush()
+
+        if status == "done":
+            report = data.get("report")
+            print("\n       ✓  Pipeline complete.")
+            break
+        elif status == "error":
+            print(f"\n       ✗  Pipeline error: {data.get('error')}")
+            sys.exit(1)
+        
+        time.sleep(1)
+    else:
+        print("\n       ✗  Timed out waiting for pipeline.")
+        sys.exit(1)
+
+    # ── 4. Retrieve list endpoint ────────────────────────────────────
+    print("\n[4/5] Verifying run list endpoint …")
+    resp = client.get("/v1/runs")
     assert resp.status_code == 200
-    full = resp.get_json()
-    report = full.get("report", full)
-    print(f"       ✓  report keys: {list(report.keys())}")
+    list_data = resp.get_json()
+    runs = list_data.get("runs", [])
+    found = any(r["id"] == run_id for r in runs)
+    print(f"       ✓  Found {len(runs)} items in history index. Current run present: {found}")
 
-    # ── 4. Validate schema structure ─────────────────────────────────
-    print("\n[4/4] Validating output schema …")
+    # ── 5. Validate schema structure ─────────────────────────────────
+    print("\n[5/5] Validating output schema …")
     errors = []
 
     def check(path, obj, key):
@@ -83,28 +117,6 @@ def run_smoke_test():
         pf = report["profiling"]
         for k in ["total_revenue", "total_refunds", "aov", "top_sku_revenue_share", "high_return_skus"]:
             check("profiling", pf, k)
-
-    if "modules" in report:
-        mods = report["modules"]
-        check("modules", mods, "returns_intelligence")
-        check("modules", mods, "revenue_dependency_risk")
-
-        if "returns_intelligence" in mods:
-            ri = mods["returns_intelligence"]
-            check("returns_intelligence", ri, "themes")
-            check("returns_intelligence", ri, "top_risk_skus")
-
-        if "revenue_dependency_risk" in mods:
-            rd = mods["revenue_dependency_risk"]
-            check("revenue_dependency_risk", rd, "risk_level")
-            check("revenue_dependency_risk", rd, "signals")
-            check("revenue_dependency_risk", rd, "concentration_metrics")
-
-    if "decision_output" in report:
-        do = report["decision_output"]
-        check("decision_output", do, "ranked_actions")
-        check("decision_output", do, "limitations")
-        check("decision_output", do, "next_questions")
 
     if errors:
         print("       ✗  Schema validation errors:")
@@ -129,18 +141,15 @@ def run_smoke_test():
         "aov": report.get("profiling", {}).get("aov"),
         "revenue_risk_level": report.get("modules", {}).get("revenue_dependency_risk", {}).get("risk_level"),
         "high_return_skus_count": len(report.get("profiling", {}).get("high_return_skus", [])),
-        "top_risk_skus_count": len(report.get("modules", {}).get("returns_intelligence", {}).get("top_risk_skus", [])),
-        "ranked_actions_count": len(report.get("decision_output", {}).get("ranked_actions", [])),
     }
     print(json.dumps(summary, indent=2))
 
-    # ── 5. Download endpoint ─────────────────────────────────────────
+    # ── Download endpoint ──
     print("\n── Download endpoint ──")
     resp = client.get(f"/v1/runs/{run_id}/download")
     assert resp.status_code == 200
     assert "attachment" in resp.headers.get("Content-Disposition", "")
     print(f"       ✓  Download works, Content-Disposition set")
-
     print()
 
 

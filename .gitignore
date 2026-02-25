@@ -1,8 +1,36 @@
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-.env
 .pytest_cache/
+.venv/
+env/
+venv/
+*.log
+
+# Environment
+.env
+.env.local
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.DS_Store
+
+# Static build
+static/dist/
+
+# Tests & Debug
 pytest_output.txt
 test_results.txt
+debug_report.json
+llm_debug.log
+
+# Systems
 .agent/
+.DS_Store
+Thumbs.db
+
+# Sample Data (Keep folder, but ignore specific user uploads if any)
+# sample_data/*.csv

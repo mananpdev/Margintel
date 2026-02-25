@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react'
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { useState, useCallback, useEffect, useRef } from 'react'
+import { AnimatePresence, motion, useMotionValue, useSpring } from 'framer-motion'
 import './index.css'
 import Header from './components/Header'
 import UploadPanel from './components/UploadPanel'
@@ -14,12 +14,11 @@ export default function App() {
   const [progress, setProgress] = useState({ pct: 0, label: '' })
   const [history, setHistory] = useState([])
   const [toast, setToast] = useState(null)
+  const pollingRef = useRef(null)
 
   // Interactive Background Logic
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-
-  // Smooth springs for high-end feel
   const springX = useSpring(mouseX, { damping: 40, stiffness: 150 })
   const springY = useSpring(mouseY, { damping: 40, stiffness: 150 })
 
@@ -32,60 +31,118 @@ export default function App() {
     return () => window.removeEventListener('mousemove', handleMove)
   }, [mouseX, mouseY])
 
+  // ── Load history from backend on mount ──
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const resp = await fetch(`${API}/v1/runs`)
+        if (!resp.ok) return
+        const data = await resp.json()
+        const runs = data.runs || []
+        // For each completed run, fetch the full report
+        const fullRuns = await Promise.all(
+          runs.map(async (r) => {
+            try {
+              const rr = await fetch(`${API}/v1/runs/${r.id}`)
+              const rd = await rr.json()
+              return { id: r.id, time: new Date(r.generated_at), report: rd.report || rd }
+            } catch { return null }
+          })
+        )
+        setHistory(fullRuns.filter(Boolean))
+      } catch { /* ignore on mount */ }
+    }
+    loadHistory()
+  }, [])
+
   const showToast = useCallback((msg, type = 'success') => {
     setToast({ msg, type })
-    setTimeout(() => setToast(null), 5000)
+    setTimeout(() => setToast(null), 8000)
   }, [])
+
+  // ── Poll backend for real progress ──
+  const pollProgress = useCallback((runId) => {
+    if (pollingRef.current) clearInterval(pollingRef.current)
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const resp = await fetch(`${API}/v1/runs/${runId}`)
+        const data = await resp.json()
+
+        // Update progress from backend
+        if (data.progress) {
+          setProgress({ pct: data.progress.pct, label: data.progress.label })
+        }
+
+        // Check if done
+        if (data.status === 'done') {
+          clearInterval(pollingRef.current)
+          pollingRef.current = null
+          const fullReport = data.report || data
+          setReport(fullReport)
+          setHistory(prev => [{ id: runId, time: new Date(), report: fullReport }, ...prev])
+          setLoading(false)
+          showToast('Neural intelligence synthesis complete')
+          setTimeout(() => setProgress({ pct: 0, label: '' }), 1500)
+        }
+
+        // Check if error
+        if (data.status === 'error') {
+          clearInterval(pollingRef.current)
+          pollingRef.current = null
+          setLoading(false)
+          showToast(data.error || 'Pipeline failed', 'error')
+          setTimeout(() => setProgress({ pct: 0, label: '' }), 1500)
+        }
+      } catch {
+        // Network error — keep polling
+      }
+    }, 1000) // Poll every second
+  }, [showToast])
 
   const runAnalysis = useCallback(async (formData) => {
     setLoading(true)
     setReport(null)
-
-    const auditSteps = [
-      'Synchronizing data streams',
-      'Executing contribution models',
-      'Correlating return signatures',
-      'Synthesizing LLM intelligence',
-      'Finalizing strategic report'
-    ]
-
-    let stepIdx = 0
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        const nextPct = Math.min(prev.pct + (Math.random() * 4), 99)
-        if (nextPct > (stepIdx + 1) * 20 && stepIdx < auditSteps.length - 1) {
-          stepIdx++
-        }
-        return { pct: nextPct, label: auditSteps[stepIdx] }
-      })
-    }, 500)
+    setProgress({ pct: 2, label: 'Initializing data streams' })
 
     try {
       const resp = await fetch(`${API}/v1/runs`, { method: 'POST', body: formData })
-      if (!resp.ok) throw new Error('Data processing interface returned an error')
-
       const data = await resp.json()
-      const reportResp = await fetch(`${API}/v1/runs/${data.run_id}`)
-      const reportData = await reportResp.json()
-      const fullReport = reportData.report || reportData
 
-      clearInterval(interval)
-      setProgress({ pct: 100, label: 'Optimization complete' })
+      if (!resp.ok) {
+        // Show the actual backend error message (#8)
+        throw new Error(data.error || 'Analysis request failed')
+      }
 
-      setReport(fullReport)
-      setHistory(prev => [{ id: data.run_id, time: new Date(), report: fullReport }, ...prev])
-      showToast('Neural intelligence synthesis complete')
+      // Start polling for real progress
+      pollProgress(data.run_id)
     } catch (err) {
-      clearInterval(interval)
-      showToast(err.message, 'error')
-    } finally {
       setLoading(false)
+      showToast(err.message, 'error')
       setTimeout(() => setProgress({ pct: 0, label: '' }), 1000)
     }
-  }, [showToast])
+  }, [showToast, pollProgress])
+
+  // ── Keyboard shortcuts (#15) ──
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'Escape' && report) {
+        setReport(null)
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [report])
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current)
+    }
+  }, [])
 
   return (
-    <div className="flex flex-col min-h-screen relative overflow-hidden bg-black">
+    <div className="flex flex-col min-h-screen relative overflow-hidden bg-black" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       {/* ── Interactive Background Layer ── */}
       <div className="million-dollar-bg" />
       <div className="grid-overlay" />
@@ -94,75 +151,67 @@ export default function App() {
       <motion.div
         style={{
           position: 'fixed',
-          width: '800px',
-          height: '800px',
-          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%)',
+          width: '500px',
+          height: '500px',
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, rgba(99, 102, 241, 0.06) 40%, transparent 70%)',
           borderRadius: '50%',
           left: springX,
           top: springY,
           transform: 'translate(-50%, -50%)',
           zIndex: -1,
           pointerEvents: 'none',
-          filter: 'blur(40px)'
+          filter: 'blur(60px)'
         }}
       />
 
       <Header />
 
-      <main className="container flex-grow py-24 relative z-10">
-        <section style={{ marginBottom: '6rem', textAlign: 'center' }}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 14px',
-              background: 'rgba(255, 255, 255, 0.03)',
-              borderRadius: '999px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              fontSize: '0.7rem',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              color: 'var(--muted)',
-              marginBottom: '2rem'
-            }}
-          >
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)', display: 'inline-block' }} />
-            Enterprise Strategic Intelligence v0.1
-          </motion.div>
+      <main className="container" style={{ flex: 1, paddingTop: '4rem', paddingBottom: '4rem', position: 'relative', zIndex: 10 }}>
+        {!report && !loading && (
+          <section style={{ marginBottom: '4rem', textAlign: 'center' }}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 14px',
+                border: '1px solid var(--border)',
+                borderRadius: '999px',
+                marginBottom: '2rem',
+                background: 'rgba(255,255,255,0.02)'
+              }}
+            >
+              <div style={{ width: '6px', height: '6px', background: 'var(--accent)', borderRadius: '50%' }} />
+              <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--muted)', letterSpacing: '0.1em' }}>
+                INTELLIGENCE ENGINE v0.1
+              </span>
+            </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.8 }}
-            className="text-gradient"
-          >
-            The future of <br /> margin intelligence.
-          </motion.h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-gradient"
+              style={{ fontSize: '3rem', lineHeight: 1.1, marginBottom: '1.5rem' }}
+            >
+              Margin Intelligence<br />Engine
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              style={{ fontSize: '1rem', color: 'var(--muted)', maxWidth: '500px', margin: '0 auto' }}
+            >
+              Upload transaction data. Receive AI-powered strategic intelligence in seconds.
+            </motion.p>
+          </section>
+        )}
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            style={{
-              color: 'var(--muted)',
-              fontSize: '1.2rem',
-              maxWidth: '36rem',
-              margin: '2rem auto 0',
-              fontWeight: 400,
-              lineHeight: 1.6
-            }}
-          >
-            Synthesize your transactional data with LLM-powered strategic forecasting to identify, secure, and grow your contribution margin.
-          </motion.p>
-        </section>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 380px) 1fr', gap: '4rem', alignItems: 'start' }}>
-          <aside style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            <UploadPanel onSubmit={runAnalysis} loading={loading} progress={progress} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 360px) 1fr', gap: '2.5rem', alignItems: 'start' }}>
+          <aside style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', position: 'sticky', top: '80px' }}>
+            <UploadPanel onSubmit={runAnalysis} loading={loading} progress={progress} report={report} onReset={() => setReport(null)} />
 
             <AnimatePresence>
               {history.length > 0 && (
@@ -170,15 +219,15 @@ export default function App() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="glass"
-                  style={{ padding: '2rem' }}
+                  style={{ padding: '1.5rem' }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                     <h3 style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--muted)', letterSpacing: '0.1em' }}>
                       Historical Index
                     </h3>
                     <div style={{ fontSize: '0.7rem', color: 'var(--muted)', fontWeight: 600 }}>{history.length} ITEMS</div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '240px', overflowY: 'auto' }}>
                     {history.map((h) => (
                       <button
                         key={h.id}
@@ -209,7 +258,9 @@ export default function App() {
             </AnimatePresence>
           </aside>
 
-          <ResultsPanel report={report} />
+          <div style={{ maxHeight: '80vh', overflowY: 'auto' }} className="scrollbar-hide">
+            <ResultsPanel report={report} loading={loading} />
+          </div>
         </div>
       </main>
 
@@ -227,35 +278,20 @@ export default function App() {
               right: '2rem',
               padding: '12px 20px',
               borderRadius: '8px',
-              background: toast.type === 'error' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(255, 255, 255, 0.9)',
-              backdropFilter: 'blur(20px)',
-              color: toast.type === 'error' ? '#fff' : '#000',
-              fontWeight: 700,
+              background: toast.type === 'error' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+              border: `1px solid ${toast.type === 'error' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
+              color: toast.type === 'error' ? '#fca5a5' : '#6ee7b7',
               fontSize: '0.75rem',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+              fontWeight: 600,
               zIndex: 1000,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              border: `1px solid ${toast.type === 'error' ? 'rgba(255,255,255,0.2)' : 'transparent'}`
+              maxWidth: '400px',
+              backdropFilter: 'blur(10px)'
             }}
           >
             {toast.msg}
           </motion.div>
         )}
       </AnimatePresence>
-
-      <style>{`
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .min-h-screen { min-height: 100vh; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-        .flex-grow { flex-grow: 1; }
-        .py-24 { padding-top: 6rem; padding-bottom: 6rem; }
-        @media (max-width: 1100px) {
-          main > div { grid-template-columns: 1fr !important; }
-          h1 { font-size: 3rem !important; }
-        }
-      `}</style>
     </div>
   )
 }

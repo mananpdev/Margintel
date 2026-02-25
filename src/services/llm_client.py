@@ -28,8 +28,11 @@ class LLMClient:
             try:
                 from openai import OpenAI
                 self._client = OpenAI(api_key=OPENAI_API_KEY)
+                logger.info("OpenAI client initialized (model=%s)", LLM_MODEL)
             except Exception as exc:
                 logger.warning("OpenAI client init failed: %s", exc)
+        else:
+            logger.info("No OPENAI_API_KEY set — LLM features disabled")
 
     @property
     def available(self) -> bool:
@@ -65,8 +68,13 @@ class LLMClient:
         )
 
         raw = self._call(system_msg, user_msg)
+        if not raw:
+            logger.warning("cluster_return_reasons: LLM returned empty response")
+            return []
         parsed = self._parse_json(raw)
-        return parsed.get("themes", [])
+        themes = parsed.get("themes", [])
+        logger.info("cluster_return_reasons: got %d themes", len(themes))
+        return themes
 
     # ── Prompt 2: Decision & Action Ranking ──────────────────────────────
 
@@ -130,6 +138,7 @@ class LLMClient:
         if not self._client:
             return ""
         try:
+            logger.info("LLM call starting (model=%s)...", LLM_MODEL)
             resp = self._client.chat.completions.create(
                 model=LLM_MODEL,
                 messages=[
@@ -140,11 +149,11 @@ class LLMClient:
                 max_tokens=4096,
                 response_format={"type": "json_object"},
             )
-            return resp.choices[0].message.content or ""
+            result = resp.choices[0].message.content or ""
+            logger.info("LLM call success (%d chars)", len(result))
+            return result
         except Exception as exc:
             logger.error("LLM API call failed: %s", exc)
-            # Re-raise or return empty depending on desired robustness.
-            # Returning empty string will lead to empty/placeholder results.
             return ""
 
     @staticmethod

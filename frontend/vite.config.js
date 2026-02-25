@@ -6,7 +6,11 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/v1': 'http://localhost:5000',
+      '/v1': {
+        target: 'http://localhost:5000',
+        timeout: 180000,
+        proxyTimeout: 180000,
+      },
       '/health': 'http://localhost:5000',
     }
   },

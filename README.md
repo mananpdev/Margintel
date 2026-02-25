@@ -198,3 +198,7 @@ All config via environment variables (see `.env.example`):
 ## 📝 License
 
 MIT
+
+---
+
+**Developed by [mananpdev](https://github.com/mananpdev)**

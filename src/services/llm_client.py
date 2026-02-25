@@ -127,17 +127,25 @@ class LLMClient:
     # ── internals ────────────────────────────────────────────────────────
 
     def _call(self, system_msg: str, user_msg: str) -> str:
-        resp = self._client.chat.completions.create(
-            model=LLM_MODEL,
-            messages=[
-                {"role": "system", "content": system_msg},
-                {"role": "user", "content": user_msg},
-            ],
-            temperature=0.2,
-            max_tokens=4096,
-            response_format={"type": "json_object"},
-        )
-        return resp.choices[0].message.content or ""
+        if not self._client:
+            return ""
+        try:
+            resp = self._client.chat.completions.create(
+                model=LLM_MODEL,
+                messages=[
+                    {"role": "system", "content": system_msg},
+                    {"role": "user", "content": user_msg},
+                ],
+                temperature=0.2,
+                max_tokens=4096,
+                response_format={"type": "json_object"},
+            )
+            return resp.choices[0].message.content or ""
+        except Exception as exc:
+            logger.error("LLM API call failed: %s", exc)
+            # Re-raise or return empty depending on desired robustness.
+            # Returning empty string will lead to empty/placeholder results.
+            return ""
 
     @staticmethod
     def _parse_json(raw: str) -> dict:

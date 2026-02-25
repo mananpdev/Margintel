@@ -8,7 +8,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ── LLM ──────────────────────────────────────────────────────────────────────
-OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+# ── LLM ──────────────────────────────────────────────────────────────────────
+_raw_key = os.getenv("OPENAI_API_KEY", "")
+# Avoid treating "sk-your-key-here" or similar placeholders as valid keys
+if "your-key" in _raw_key.lower() or "placeholder" in _raw_key.lower() or not _raw_key.startswith("sk-"):
+    OPENAI_API_KEY = ""
+else:
+    OPENAI_API_KEY = _raw_key
+
 LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-4o-mini")
 
 # ── Thresholds (deterministic) ───────────────────────────────────────────────

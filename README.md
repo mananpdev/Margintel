@@ -10,6 +10,9 @@ Margintel separates deterministic financial truth from strategic generative reas
 
 ### 🔍 Analytic Modules
 
+#### 0. Smart Ingestion (Fuzzy Mapping)
+Automatically detects and maps column headers from platforms like **Shopify, Amazon, and WooCommerce**. It handles variations like `Product SKU` vs `sku` or `Unit Price` vs `item_price` using fuzzy synonym matching, making the engine platform-agnostic.
+
 #### 1. DataProfiler (Deterministic Core)
 - **Revenue Baseline**: Establishes Gross Contribution, AOV, and SKU-level distribution.
 - **Concentration Modeling**: Computes Top-1, Top-3, and Top-5 SKU revenue share to identify Single Point of Failure (SPOF) risks.

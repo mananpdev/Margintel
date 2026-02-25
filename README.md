@@ -1,4 +1,4 @@
-# AI Margin Intelligence Engine v0.1
+# Margintel (AI Margin Intelligence Engine v0.1)
 
 > Take structured ecommerce CSV exports → get a machine-usable JSON report with return intelligence, revenue dependency risk, and ranked business actions.
 

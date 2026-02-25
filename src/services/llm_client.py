@@ -15,6 +15,7 @@ import logging
 from typing import Any
 
 from src.config import OPENAI_API_KEY, LLM_MODEL, MAX_ACTIONS
+from src.utils.decorators import retry_on_exception
 
 logger = logging.getLogger(__name__)
 
@@ -134,6 +135,7 @@ class LLMClient:
 
     # ── internals ────────────────────────────────────────────────────────
 
+    @retry_on_exception(max_retries=3, initial_delay=1.0)
     def _call(self, system_msg: str, user_msg: str) -> str:
         if not self._client:
             return ""
@@ -154,7 +156,7 @@ class LLMClient:
             return result
         except Exception as exc:
             logger.error("LLM API call failed: %s", exc)
-            return ""
+            raise exc  # Raise to trigger retry decorator
 
     @staticmethod
     def _parse_json(raw: str) -> dict:

@@ -1,149 +1,144 @@
-# Margintel (AI Margin Intelligence Engine v0.1.1)
+# Margintel | The AI Margin Intelligence Engine (v1.0)
 
-> **Margintel** is an industrial-grade intelligence engine that converts raw ecommerce transaction layers into machine-usable strategic roadmaps.
+[![Engine Status](https://img.shields.io/badge/Engine-Active-06B6D4?style=for-the-badge)](https://github.com/mananpdev/margin-intel-engine)
+[![Framework](https://img.shields.io/badge/Architecture-Obsidian_Clean-8B5CF6?style=for-the-badge)](docs/architecture.md)
 
----
-
-## ✦ The Intelligence Architecture
-
-Margintel separates deterministic financial truth from strategic generative reasoning. This dual-layer approach ensures that every AI recommendation is anchored in validated statistical signals.
-
-### 🔍 Analytic Modules
-
-#### 0. Smart Ingestion (Fuzzy Mapping)
-Automatically detects and maps column headers from platforms like **Shopify, Amazon, and WooCommerce**. It handles variations like `Product SKU` vs `sku` or `Unit Price` vs `item_price` using fuzzy synonym matching, making the engine platform-agnostic.
-
-#### 1. DataProfiler (Deterministic Core)
-- **Revenue Baseline**: Establishes Gross Contribution, AOV, and SKU-level distribution.
-- **Concentration Modeling**: Computes Top-1, Top-3, and Top-5 SKU revenue share to identify Single Point of Failure (SPOF) risks.
-- **Anomaly Detection**: Identifies High-Return SKUs by correlating return rates against revenue impact.
-
-#### 2. ReturnsAnalyzer (Hybrid Logic)
-- **Mode A (Semantic)**: Uses LLM clustering to group free-text `return_reason_text` into prioritized themes.
-- **Mode B (Deterministic)**: Falls back to analyzing `refund_amount` patterns if semantic reasons are unavailable.
-- **Severity Scoring**: Themes are assigned a severity (1-5) based on potential systematic impact.
-
-#### 3. Revenue Dependency & Concentration
-- **Risk Classification**: Automatically flags concentration risk levels (`low`, `medium`, `high`) based on Top-SKU thresholds.
-- **Signal Vectoring**: Produces specific signals like `top1_share_over_45pct` to inform downstream action ranking.
-
-#### 4. LLM Interpreter (Decision Layer)
-- **Strategic Synthesis**: Ingests all profiling signals and clusters to produce ranked actions.
-- **Context Awareness**: Tailors output based on user-provided `business_goal` and `constraints`.
-- **Evidence-Based**: Every action includes list of specific metrics/signals used for reasoning.
+> **Margintel** is an industrial-grade intelligence layer that converts raw, messy ecommerce transaction streams into high-fidelity strategic roadmaps. It bridges the gap between **deterministic financial reconcilation** and **generative strategic synthesis**.
 
 ---
 
-## 📡 API v1 Interface
+## 📖 Table of Contents
+1. [Executive Summary](#-executive-summary)
+2. [The "Obsidian" Architecture](#-the-obsidian-architecture)
+3. [Deep Dive: Intelligence Modules](#-deep-dive-intelligence-modules)
+4. [Data Contract & Ingestion](#-data-contract--ingestion)
+5. [The Obsidian UI Experience](#-the-obsidian-ui-experience)
+6. [API Specification (v1)](#-api-specification-v1)
+7. [Getting Started (DevOps)](#-getting-started-devops)
+8. [The 24-Month Roadmap](#-the-24-month-roadmap)
 
-Margintel uses an **Asynchronous Pipeline** to ensure the API remains responsive during complex LLM synthesis.
+---
+
+## ✦ Executive Summary
+
+In modern retail, merchants are "Data Rich but Insight Poor." They have thousands of returns and millions in revenue, but the **"Leakage Hotspots"**—the specific SKUs and reasons causing margin bleed—are often buried.
+
+**Margintel** solves this by running every transaction through a dual-logic engine. It doesn't just tell you how much you sold; it tells you **why** your margins are shrinking and **exactly** what to do about it, backed by verifiable data signatures.
+
+---
+
+## 🏛 The "Obsidian" Architecture
+
+As a developer with 25 years of experience, I've seen that AI only works in production when it's anchored to a **Deterministic Core**. The Margintel "Obsidian" design splits the workload into two distinct phases:
+
+### Phase A: The Deterministic Core (Truth)
+Before any AI even looks at your data, the **Profiler** and **Dependency** modules execute O(n) vectorized operations using Pandas. 
+- **Goal**: Establish the "Ground Truth."
+- **Output**: Revenue concentration, return rates, and AOV benchmarks.
+
+### Phase B: The Generative Synthesis (Strategy)
+Once the "Truth" is established, these signals are fed into a **Neural Swarm** (powered by GPT-4o).
+- **Goal**: Translate metrics into human-executable initiatives.
+- **Output**: Ranked actions with confidence scores and execution blueprints.
+
+---
+
+## 🔍 Deep Dive: Intelligence Modules
+
+### 1. Neural Ingestion (`src/utils/csv_loader.py`)
+Most CSVs are messy. Our ingestion layer uses **Fuzzy Synonym Mapping**. If your file says `SKU_ID` instead of `sku`, or `Price_Each` instead of `item_price`, the engine automatically maps these to the internal intelligence schema.
+
+### 2. Leakage Vectoring (`src/services/profiler.py`)
+We don't just calculate a return rate. We calculate **Margin Risk Velocity**.
+- **The Metric**: `(Return Rate * Refund Volume) / Total Revenue`. 
+- **The Purpose**: High-return items that are *also* high-revenue are prioritized as "Flashpoints."
+
+### 3. Returns Intelligence (`src/services/returns_analyzer.py`)
+This module performs **Semantic Vectorization** on return reason text.
+- **Problem**: "Item too small" and "Size was tiny" are the same problem but different words.
+- **Solution**: The LLM clusters these into **Neural Themes** (e.g., "Sizing Inconsistency") and provides an "Affected Node" list.
+
+### 4. Strategic Decisioning (`src/services/llm_client.py`)
+This is the "Brain." It takes user goals (e.g., "Maximize Q4 Profit") and maps them against the detected risks. It produces **Execution Blueprints** that include:
+- **Evidence Used**: Exactly which metrics triggered this advice.
+- **Confidence Index**: A 0.0-1.0 rating of the LLM's certainty based on data density.
+
+---
+
+## 📊 Data Contract & Ingestion
+
+To run a synthesis, the engine requires a `Dataset Summary`. While the ingestion is fuzzy, the following vectors are required:
+
+| Field | Purpose | Sample |
+| :--- | :--- | :--- |
+| `order_id` | Transaction Identity | `ORD-9981` |
+| `sku` | Product Identification | `PRD-BLUE-LG` |
+| `quantity` | Volume Calculation | `2` |
+| `item_price` | Revenue Anchoring | `45.00` |
+| `return_reason_text` | (Optional) Semantic Cluster | "Product arrived damaged" |
+
+---
+
+## 🖥 The Obsidian UI Experience
+
+The frontend is a high-performance **Dark Grid** optimized for decision velocity.
+
+*   **Silk Motion Physics**: Using a custom Quintic-Bezier curve `[0.23, 1, 0.32, 1]`, every card and modal materializes with zero friction.
+*   **Hardware Acceleration**: All UI transitions utilize `transform: translateZ(0)` to ensure a locked 60 FPS during data heavy rendering.
+*   **Deep Dive Drills**: Click on any chart or metric to open an "Intelligence Node" modal. These modals pull direct evidence from the raw transaction layer.
+
+---
+
+## 📡 API Specification (v1)
+
+The API is built for high-throughput and observability.
 
 ### Endpoints
+- `POST /v1/runs`: Stateless ingestion. Returns `run_id`.
+- `GET /v1/runs/<id>`: Polling hook. Returns `progress` (0.0 - 1.0) and `status`.
+- `GET /v1/runs`: Historical registry of previous analysis cycles.
 
-| Method | Path | Status | Description |
-|---|---|---|---|
-| `GET` | `/health` | 200 | Returns system status and `llm_available` flag. |
-| `POST` | `/v1/runs` | 202 | Accepts CSV files. Starts background thread. Returns `run_id`. |
-| `GET` | `/v1/runs` | 200 | Returns summary index of all history items stored in memory. |
-| `GET` | `/v1/runs/<id>` | 200 | Returns progress telemetry, status, and full report when ready. |
-| `GET` | `/v1/runs/<id>/download` | 200 | Triggers `application/json` download with proper headers. |
-
-### The Telemetry Pipeline
-While a run is `processing`, clients can poll for these real-time progress steps:
-1. `Synchronizing data streams` (Data ingestion & validation)
-2. `Executing contribution models` (Profiling & Stats)
-3. `Correlating return signatures` (Returns analysis & clustering)
-4. `Mapping revenue dependency risk` (Concentration analysis)
-5. `Synthesizing LLM intelligence` (LLM Decision ranking)
-6. `Finalizing strategic report` (Report assembly)
+### Resiliency
+The API includes an **Exponential Backoff Decorator**. If the OpenAI API is under load, the engine will automatically retry with a delay of `1s -> 2s -> 4s`, ensuring your analysis doesn't crash during peak hours.
 
 ---
 
-## 🖥 The Dashboard (UX/UI)
+## ⚙ Getting Started (DevOps)
 
-A high-performance, dark-themed interface built for data-intensive workflows.
+### Required Stack
+- **Backend**: Python 3.10+
+- **Frontend**: Node.js 18+ (Vite)
+- **Intelligence**: OpenAI API Key (GPT-4o default)
 
-### ✦ Visual Intelligence
-- **Interactive Background**: A fluid cyan-indigo spotlight system built with `framer-motion` springs.
-- **Loading Skeletons**: Pulsing placeholder components maintain layout stability during analysis.
-- **Data Visualization**: Recharts integration for Revenue Distribution (Pie) and Concentration Bars.
-- **Independant Scrolling**: Multi-pane layout allows independent scrolling of inputs and results.
-
-### ✦ Operation & Productivity
-- **History Index**: Hydrates on mount from the backend, allowing access to previous runs even after page refreshes.
-- **Advanced Parameters**: Toggleable panel to specify a custom `Business Goal` or `Constraints`.
-- **Hotkeys**:
-  - `Ctrl + Enter`: Execute Analysis
-  - `Escape`: Reset/Clear current report view
-- **Reliability**: Integrated Error Boundaries prevent UI crashes if data payloads contain anomalies. 
-- **Blob-Stream Export**: Uses fetch-blob to ensure reliable file saving across all modern browsers.
-
----
-
-## � Data Schema & Validation
-
-### Required Columns (Orders)
-| Column | Type | Description |
-|---|---|---|
-| `order_id` | String | Unique transaction ID |
-| `sku` | String | Product identifier |
-| `quantity` | Number | Items sold |
-| `item_price` | Number | Unit price |
-
-### Optional Enrichment Columns
-| Column | Layer | Influence |
-|---|---|---|
-| `order_date` | Orders | Enables date-range summary |
-| `refund_amount` | Orders | Enables Mode-B refund analysis |
-| `discount_amount`| Orders | Refines gross contribution accuracy |
-| `line_total` | Orders | Direct revenue source (overrides compute) |
-| `return_reason_text`| Returns| Enables semantic theme clustering |
-| `return_amount` | Returns| Enables Mode-A return-count analysis |
+### Setup In 2 Minutes
+1.  **Clone & Configure**:
+    ```bash
+    git clone https://github.com/mananpdev/margin-intel-engine
+    cp .env.example .env # Add your OPENAI_API_KEY
+    ```
+2.  **Start Intelligence Engine**:
+    ```bash
+    pip install -r requirements.txt
+    python app.py
+    ```
+3.  **Start Control Panel**:
+    ```bash
+    cd frontend && npm install && npm run dev
+    ```
 
 ---
 
-## � System Architecture
+## 🗺 The 24-Month Roadmap
 
-```
-margin-intel-engine/
-├── app.py                      # Flask Server (Async Pipeline Entry)
-├── src/
-│   ├── config.py               # Config & Thresholds (0.10 return rate, etc)
-│   ├── schemas.py              # Output Contract Factory
-│   ├── services/
-│   │   ├── profiler.py         # Calculation Logic
-│   │   ├── llm_client.py       # OpenAI Prompts (System & User messages)
-│   │   └── report_builder.py   # Final JSON Assembly
-│   ├── utils/
-│   │   ├── csv_loader.py       # Float/Date Coercion & Normalization
-│   │   └── validators.py       # Structural Integrity Checks
-│   └── storage/
-│       └── memory_store.py     # Thread-safe metadata store
-└── frontend/
-    ├── vite.config.js          # API Proxying & Build setup
-    └── src/
-        ├── App.jsx             # State, Telemetry Polling, History Logic
-        ├── index.css           # CSS Variables & Tailwind-grade utilities
-        └── components/         # Atomic UI components
-```
+### Phase 2: Persistence Layer
+Migration from in-memory `MemoryStore` to **PostgreSQL + Redis**. This will enable user accounts and cross-period comparisons.
+
+### Phase 3: The Agent Swarm
+Replacement of the single-prompt LLM with a **Multi-Agent Orchestrator**:
+- **Agent A (The Auditor)**: Verifies statistical math.
+- **Agent B (The Strategist)**: Proposes market-specific actions.
+- **Agent C (The Writer)**: Formats findings into a professional PDF summary.
 
 ---
 
-## ⚙ Configuration Values
-
-Defined in `.env`, utilized by `src/config.py`:
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `OPENAI_API_KEY` | (empty) | Enables LLM semantic clustering & ranking |
-| `LLM_MODEL` | `gpt-4o-mini`| Target model for reasoning |
-| `RETURN_RATE_THRESHOLD`| `0.10` | Sensitivity for high-return SKU flags |
-| `CURRENCY` | `CAD` | Labeling for all financial metrics |
-| `MAX_ACTIONS` | `7` | Maximum actions returned by decision model |
-| `MAX_REASON_SAMPLES` | `80` | Max return reasons sent for clustering |
-
----
-
-## 📝 License / Copyright
-
-© 2026 Margintel Inc. Codebase is MIT licensed.
+© 2026 Margintel Inc. | Premium Intelligence for the Modern Merchant.

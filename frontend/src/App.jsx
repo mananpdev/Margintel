@@ -142,115 +142,133 @@ export default function App() {
   }, [])
 
   return (
-    <div className="flex flex-col min-h-screen relative overflow-hidden bg-black" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      {/* ── Interactive Background Layer ── */}
+    <div className="flex flex-col min-h-screen relative overflow-hidden text-slate-50" style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+      {/* ── Background Infrastructure ── */}
       <div className="million-dollar-bg" />
+      <div className="ambient-light" />
       <div className="grid-overlay" />
 
-      {/* Dynamic Cursor Spotlight */}
+      {/* Dynamic Cursor Spotlight - Senior dev touch: Subtle blur and larger reach */}
       <motion.div
         style={{
           position: 'fixed',
-          width: '500px',
-          height: '500px',
-          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.18) 0%, rgba(99, 102, 241, 0.06) 40%, transparent 70%)',
+          width: '800px',
+          height: '800px',
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(99, 102, 241, 0.03) 40%, transparent 70%)',
           borderRadius: '50%',
           left: springX,
           top: springY,
           transform: 'translate(-50%, -50%)',
           zIndex: -1,
           pointerEvents: 'none',
-          filter: 'blur(60px)'
+          filter: 'blur(100px)'
         }}
       />
 
       <Header />
 
-      <main className="container" style={{ flex: 1, paddingTop: '4rem', paddingBottom: '4rem', position: 'relative', zIndex: 10 }}>
+      <main className="container" style={{ flex: 1, paddingTop: '6rem', paddingBottom: '6rem', position: 'relative', zIndex: 10 }}>
         {!report && !loading && (
-          <section style={{ marginBottom: '4rem', textAlign: 'center' }}>
+          <header style={{ marginBottom: '5rem', textAlign: 'center' }}>
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
+                gap: '10px',
                 padding: '6px 14px',
                 border: '1px solid var(--border)',
                 borderRadius: '999px',
-                marginBottom: '2rem',
-                background: 'rgba(255,255,255,0.02)'
+                marginBottom: '2.5rem',
+                background: 'rgba(255,255,255,0.02)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.03)'
               }}
             >
-              <div style={{ width: '6px', height: '6px', background: 'var(--accent)', borderRadius: '50%' }} />
-              <span style={{ fontSize: '0.6875rem', fontWeight: 600, color: 'var(--muted)', letterSpacing: '0.1em' }}>
-                INTELLIGENCE ENGINE v0.1
+              <span style={{ display: 'block', width: '6px', height: '6px', background: 'var(--accent)', borderRadius: '50%', boxShadow: '0 0 10px var(--accent)' }} />
+              <span className="mono" style={{ color: 'var(--fg-soft)', letterSpacing: '0.15em', fontWeight: 600 }}>
+                STRATEGIC INTELLIGENCE ENGINE v1.0
               </span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="text-gradient"
-              style={{ fontSize: '3rem', lineHeight: 1.1, marginBottom: '1.5rem' }}
+              style={{ fontSize: '4.5rem', lineHeight: 1.05, marginBottom: '1.5rem', fontWeight: 800 }}
             >
-              Margin Intelligence<br />Engine
+              Predict. Optimize.<br />Dominate Margins.
             </motion.h1>
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              style={{ fontSize: '1rem', color: 'var(--muted)', maxWidth: '500px', margin: '0 auto' }}
+              transition={{ delay: 0.3, duration: 1 }}
+              style={{ fontSize: '1.25rem', color: 'var(--fg-soft)', maxWidth: '600px', margin: '0 auto', fontWeight: 400 }}
             >
-              Upload transaction data. Receive AI-powered strategic intelligence in seconds.
+              Neural-powered synthesis of transaction streams into high-impact strategic actions.
             </motion.p>
-          </section>
+          </header>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 360px) 1fr', gap: '2.5rem', alignItems: 'start' }}>
-          <aside style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', position: 'sticky', top: '80px' }}>
+        {/* Main Interface Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '3rem', alignItems: 'start' }}>
+
+          {/* Left Control Column */}
+          <aside style={{ display: 'flex', flexDirection: 'column', gap: '2rem', position: 'sticky', top: '100px' }}>
             <UploadPanel onSubmit={runAnalysis} loading={loading} progress={progress} report={report} onReset={() => setReport(null)} />
 
             <AnimatePresence>
               {history.length > 0 && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   className="glass"
                   style={{ padding: '1.5rem' }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h3 style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--muted)', letterSpacing: '0.1em' }}>
-                      Historical Index
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <h3 style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--fg-muted)', letterSpacing: '0.1em' }}>
+                      SYNTHESIS REGISTRY
                     </h3>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--muted)', fontWeight: 600 }}>{history.length} ITEMS</div>
+                    <div className="mono" style={{ fontSize: '0.7rem', color: 'var(--accent)', fontWeight: 700 }}>{history.length} RECORDS</div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '240px', overflowY: 'auto' }}>
-                    {history.map((h) => (
-                      <button
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto' }} className="scrollbar-hide">
+                    {history.map((h, idx) => (
+                      <motion.button
                         key={h.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
                         onClick={() => setReport(h.report)}
+                        className="history-item"
                         style={{
                           width: '100%',
                           textAlign: 'left',
-                          padding: '1rem',
-                          borderRadius: '10px',
-                          background: report?.run_id === h.id ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.01)',
-                          border: `1px solid ${report?.run_id === h.id ? 'var(--border-strong)' : 'transparent'}`,
-                          color: report?.run_id === h.id ? '#fff' : 'var(--muted)',
-                          fontSize: '0.8rem',
+                          padding: '12px 16px',
+                          borderRadius: '12px',
+                          background: report?.run_id === h.id ? 'rgba(6, 182, 212, 0.1)' : 'rgba(255,255,255,0.02)',
+                          border: '1px solid',
+                          borderColor: report?.run_id === h.id ? 'var(--accent)' : 'transparent',
+                          color: report?.run_id === h.id ? '#fff' : 'var(--fg-soft)',
+                          fontSize: '0.85rem',
                           cursor: 'pointer',
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                           display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center'
+                          flexDirection: 'column',
+                          gap: '4px'
                         }}
                       >
-                        <span style={{ fontFamily: 'var(--mono)', fontWeight: 600 }}>{h.id.slice(0, 16).toUpperCase()}</span>
-                        <span style={{ opacity: 0.4, fontSize: '0.65rem', fontWeight: 700 }}>{h.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                      </button>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                          <span className="mono" style={{ fontWeight: 700, color: report?.run_id === h.id ? 'var(--accent)' : 'inherit' }}>
+                            {h.id.slice(0, 8).toUpperCase()}
+                          </span>
+                          <span style={{ fontSize: '0.7rem', opacity: 0.6 }}>{h.time.toLocaleDateString()}</span>
+                        </div>
+                        <div style={{ fontSize: '0.7rem', display: 'flex', gap: '8px' }}>
+                          <span style={{ color: 'var(--fg-muted)' }}>REV:</span>
+                          <span style={{ fontWeight: 600 }}>${(h.report?.profiling?.total_revenue / 1000).toFixed(1)}k</span>
+                        </div>
+                      </motion.button>
                     ))}
                   </div>
                 </motion.div>
@@ -258,8 +276,19 @@ export default function App() {
             </AnimatePresence>
           </aside>
 
-          <div style={{ maxHeight: '80vh', overflowY: 'auto' }} className="scrollbar-hide">
-            <ResultsPanel report={report} loading={loading} />
+          {/* Right Intelligence Column */}
+          <div style={{ minHeight: '600px' }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={report?.run_id || 'empty'}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+              >
+                <ResultsPanel report={report} loading={loading} />
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </main>

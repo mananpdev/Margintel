@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 
 export default function Header() {
     const [health, setHealth] = useState(null)
@@ -29,48 +28,41 @@ export default function Header() {
             boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)'
         }}>
             <div className="container" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <div style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: 'var(--radius-sm)',
-                        background: 'var(--primary)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: '0 0 20px rgba(255,255,255,0.1)'
-                    }}>
-                        <div style={{ width: '14px', height: '14px', borderRadius: '2px', backgroundColor: '#000' }} />
-                    </div>
-                    <h1 style={{ fontSize: '1.25rem', fontWeight: 600, letterSpacing: '-0.02em' }}>Margintel</h1>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    {/* White Logo Mark */}
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                        <rect width="28" height="28" rx="6" fill="#ffffff" />
+                        <path d="M8 14L11 9L14 14L17 9L20 14" stroke="#000" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <line x1="8" y1="19" x2="20" y2="19" stroke="#000" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                    <h1 style={{ fontSize: '1.125rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#fff' }}>Margintel</h1>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '6px 14px',
+                    borderRadius: '999px',
+                    border: '1px solid var(--border)',
+                    background: 'rgba(255,255,255,0.03)'
+                }}>
                     <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.75rem',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '999px',
-                        border: '1px solid var(--border)',
-                        background: 'rgba(255,255,255,0.03)'
+                        backgroundColor: health?.ok ? 'var(--success)' : 'var(--error)',
+                        width: '6px',
+                        height: '6px',
+                        borderRadius: '50%',
+                        boxShadow: health?.ok ? '0 0 8px rgba(16, 185, 129, 0.5)' : '0 0 8px rgba(239, 68, 68, 0.5)'
+                    }} />
+                    <span style={{
+                        fontSize: '0.6875rem',
+                        fontWeight: 600,
+                        color: 'var(--muted)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em'
                     }}>
-                        <div className={`w-2 h-2 rounded-full ${health?.ok ? 'bg-success' : 'bg-error'}`} style={{
-                            backgroundColor: health?.ok ? 'var(--success)' : 'var(--error)',
-                            width: '6px',
-                            height: '6px',
-                            borderRadius: '50%'
-                        }} />
-                        <span style={{
-                            fontSize: '0.6875rem',
-                            fontWeight: 600,
-                            color: 'var(--text-secondary)',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em'
-                        }}>
-                            {health?.ok ? (health?.llm_available ? 'Engine Optimized' : 'Core Ready') : 'Connection Interrupted'}
-                        </span>
-                    </div>
+                        {health?.ok ? (health?.llm_available ? 'Engine Optimized' : 'Core Ready') : 'Offline'}
+                    </span>
                 </div>
             </div>
         </header>

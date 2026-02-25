@@ -28,8 +28,8 @@ export default function UploadPanel({ onSubmit, loading, progress }) {
                         style={{
                             height: '140px',
                             borderRadius: '12px',
-                            border: `1px dashed ${orders ? 'rgba(99, 102, 241, 0.4)' : 'var(--border)'}`,
-                            background: orders ? 'rgba(99, 102, 241, 0.02)' : 'rgba(255,255,255,0.01)',
+                            border: `1px dashed ${orders ? 'rgba(6, 182, 212, 0.4)' : 'var(--border)'}`,
+                            background: orders ? 'rgba(6, 182, 212, 0.02)' : 'rgba(255,255,255,0.01)',
                             cursor: 'pointer',
                             display: 'flex',
                             flexDirection: 'column',
@@ -62,8 +62,8 @@ export default function UploadPanel({ onSubmit, loading, progress }) {
                         style={{
                             padding: '1.25rem',
                             borderRadius: '12px',
-                            border: `1px solid ${returns ? 'rgba(99, 102, 241, 0.2)' : 'var(--border)'}`,
-                            background: returns ? 'rgba(99, 102, 241, 0.02)' : 'rgba(255,255,255,0.01)',
+                            border: `1px solid ${returns ? 'rgba(6, 182, 212, 0.2)' : 'var(--border)'}`,
+                            background: returns ? 'rgba(6, 182, 212, 0.02)' : 'rgba(255,255,255,0.01)',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',

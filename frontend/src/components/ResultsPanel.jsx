@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts'
 
-const COLORS = ['#6366F1', '#ffffff', '#71717a', '#27272a', '#18181b', '#3f3f46']
+const COLORS = ['#06B6D4', '#ffffff', '#71717a', '#27272a', '#18181b', '#3f3f46']
 
 export default function ResultsPanel({ report }) {
     const [activeTab, setActiveTab] = useState('summary')
@@ -10,7 +10,7 @@ export default function ResultsPanel({ report }) {
     if (!report) {
         return (
             <div className="glass" style={{ height: '100%', minHeight: '480px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.01)', position: 'relative', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.03), transparent 70%)' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.03), transparent 70%)' }} />
                 <motion.div
                     animate={{ opacity: [0.3, 0.5, 0.3] }}
                     transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}

@@ -96,7 +96,7 @@ export default function App() {
           position: 'fixed',
           width: '800px',
           height: '800px',
-          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%)',
           borderRadius: '50%',
           left: springX,
           top: springY,

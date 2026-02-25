@@ -1,5 +1,5 @@
 """
-Margintel v0.1
+AI Margin Intelligence Engine v0.1
 
 Flask API that takes structured ecommerce CSV exports and produces a
 machine-usable JSON report with return intelligence, revenue dependency
@@ -31,7 +31,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
 )
-logger = logging.getLogger("margintel")
+logger = logging.getLogger("margin-intel")
 
 # ── App ──────────────────────────────────────────────────────────────────────
 app = Flask(__name__, static_folder="static")

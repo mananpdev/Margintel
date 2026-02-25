@@ -20,7 +20,7 @@ SAMPLE_DIR = os.path.join(os.path.dirname(__file__), "sample_data")
 
 def run_smoke_test():
     print("=" * 60)
-    print("  Margintel — Smoke Test")
+    print("  AI Margin Intelligence Engine — Smoke Test")
     print("=" * 60)
 
     client = app.test_client()

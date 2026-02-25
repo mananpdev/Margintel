@@ -1,5 +1,6 @@
-# Margintel v0.1
-> **Intelligent Margin Risk Analysis.** Take structured ecommerce CSV exports → get a machine-usable JSON report with return intelligence, revenue dependency risk, and ranked business actions.
+# AI Margin Intelligence Engine v0.1
+
+> Take structured ecommerce CSV exports → get a machine-usable JSON report with return intelligence, revenue dependency risk, and ranked business actions.
 
 ---
 
@@ -16,10 +17,9 @@ This separation is what makes it **not** a ChatGPT wrapper.
 
 ## 🚀 Quick Start
 
-### 1. Clone & Install
+### 1. Install Dependencies
+
 ```bash
-git clone https://github.com/mananpdev/Margintel.git
-cd Margintel
 pip install -r requirements.txt
 ```
 
@@ -199,7 +199,3 @@ All config via environment variables (see `.env.example`):
 ## 📝 License
 
 MIT
-
----
-
-**Developed by [mananpdev](https://github.com/mananpdev)**

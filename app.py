@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import logging
 
-from flask import Flask, request, jsonify, Response, send_from_directory
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 
 from src.config import FLASK_DEBUG, PORT
@@ -34,7 +34,7 @@ logging.basicConfig(
 logger = logging.getLogger("margin-intel")
 
 # ── App ──────────────────────────────────────────────────────────────────────
-app = Flask(__name__, static_folder="static")
+app = Flask(__name__)
 CORS(app)
 llm = LLMClient()
 
@@ -45,8 +45,8 @@ llm = LLMClient()
 
 @app.get("/")
 def index():
-    """Serve the dashboard UI."""
-    return send_from_directory("static", "index.html")
+    """API root — redirects to health check."""
+    return jsonify({"name": "Margintel Intelligence Engine", "version": "0.1", "docs": "/health"})
 
 
 @app.get("/health")

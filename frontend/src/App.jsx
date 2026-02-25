@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useState, useCallback, useEffect } from 'react'
+import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import './index.css'
 import Header from './components/Header'
 import UploadPanel from './components/UploadPanel'
@@ -15,6 +15,23 @@ export default function App() {
   const [history, setHistory] = useState([])
   const [toast, setToast] = useState(null)
 
+  // Interactive Background Logic
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+
+  // Smooth springs for high-end feel
+  const springX = useSpring(mouseX, { damping: 40, stiffness: 150 })
+  const springY = useSpring(mouseY, { damping: 40, stiffness: 150 })
+
+  useEffect(() => {
+    const handleMove = (e) => {
+      mouseX.set(e.clientX)
+      mouseY.set(e.clientY)
+    }
+    window.addEventListener('mousemove', handleMove)
+    return () => window.removeEventListener('mousemove', handleMove)
+  }, [mouseX, mouseY])
+
   const showToast = useCallback((msg, type = 'success') => {
     setToast({ msg, type })
     setTimeout(() => setToast(null), 5000)
@@ -24,7 +41,6 @@ export default function App() {
     setLoading(true)
     setReport(null)
 
-    // Professional sequence labels
     const auditSteps = [
       'Synchronizing data streams',
       'Executing contribution models',
@@ -69,18 +85,79 @@ export default function App() {
   }, [showToast])
 
   return (
-    <div className="flex flex-col min-h-screen relative overflow-hidden">
+    <div className="flex flex-col min-h-screen relative overflow-hidden bg-black">
+      {/* ── Enhanced Interactive Background ── */}
       <div className="million-dollar-bg" />
       <div className="grid-overlay" />
+
+      {/* Drifting Aurora Orbs */}
+      <motion.div
+        animate={{
+          x: [0, 100, 0],
+          y: [0, -50, 0],
+          scale: [1, 1.2, 1],
+          opacity: [0.1, 0.15, 0.1]
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        style={{
+          position: 'fixed',
+          top: '10%',
+          left: '10%',
+          width: '600px',
+          height: '600px',
+          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(80px)',
+          zIndex: -1,
+          pointerEvents: 'none'
+        }}
+      />
+      <motion.div
+        animate={{
+          x: [0, -80, 0],
+          y: [0, 120, 0],
+          scale: [1, 1.1, 1],
+          opacity: [0.05, 0.1, 0.05]
+        }}
+        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        style={{
+          position: 'fixed',
+          bottom: '10%',
+          right: '10%',
+          width: '700px',
+          height: '700px',
+          background: 'radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(100px)',
+          zIndex: -1,
+          pointerEvents: 'none'
+        }}
+      />
+
+      {/* Reactive Cursor Spotlight (Subtle) */}
+      <motion.div
+        style={{
+          position: 'fixed',
+          width: '1000px',
+          height: '1000px',
+          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%)',
+          borderRadius: '50%',
+          left: springX,
+          top: springY,
+          transform: 'translate(-50%, -50%)',
+          zIndex: -1,
+          pointerEvents: 'none',
+          filter: 'blur(60px)'
+        }}
+      />
 
       <Header />
 
       <main className="container flex-grow py-24 relative z-10">
-        {/* Luxury Hero */}
         <section style={{ marginBottom: '6rem', textAlign: 'center' }}>
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -106,6 +183,9 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.8 }}
             className="text-gradient"
+            style={{
+              animation: 'float 6s ease-in-out infinite'
+            }}
           >
             The future of <br /> margin intelligence.
           </motion.h1>
@@ -116,7 +196,7 @@ export default function App() {
             transition={{ delay: 0.2, duration: 0.8 }}
             style={{
               color: 'var(--muted)',
-              fontSize: '1.25rem',
+              fontSize: '1.2rem',
               maxWidth: '36rem',
               margin: '2rem auto 0',
               fontWeight: 400,
@@ -127,8 +207,7 @@ export default function App() {
           </motion.p>
         </section>
 
-        {/* Tactical Interaction Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '4rem', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 380px) 1fr', gap: '4rem', alignItems: 'start' }}>
           <aside style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <UploadPanel onSubmit={runAnalysis} loading={loading} progress={progress} />
 

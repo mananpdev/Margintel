@@ -19,13 +19,14 @@ export default function Header() {
 
     return (
         <header style={{
-            height: '80px',
+            height: '72px',
             borderBottom: '1px solid var(--border)',
-            backdropBlur: '12px',
+            backdropFilter: 'blur(20px)',
             position: 'sticky',
             top: 0,
             zIndex: 100,
-            backgroundColor: 'rgba(0,0,0,0.5)'
+            backgroundColor: 'rgba(9, 9, 11, 0.8)',
+            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.3)'
         }}>
             <div className="container" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

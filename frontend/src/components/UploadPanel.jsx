@@ -26,17 +26,17 @@ export default function UploadPanel({ onSubmit, loading, progress }) {
                     <div
                         onClick={() => inputRef.current.click()}
                         style={{
-                            height: '120px',
-                            borderRadius: 'var(--radius-lg)',
-                            border: `1px dashed ${orders ? 'var(--accent)' : 'var(--border)'}`,
-                            background: orders ? 'rgba(99, 102, 241, 0.05)' : 'rgba(255,255,255,0.02)',
+                            height: '140px',
+                            borderRadius: '12px',
+                            border: `1px dashed ${orders ? 'rgba(99, 102, 241, 0.4)' : 'var(--border)'}`,
+                            background: orders ? 'rgba(99, 102, 241, 0.02)' : 'rgba(255,255,255,0.01)',
                             cursor: 'pointer',
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            transition: 'all 0.2s ease',
-                            gap: '0.5rem'
+                            transition: 'all 0.3s ease',
+                            gap: '0.75rem'
                         }}
                     >
                         <input
@@ -44,51 +44,62 @@ export default function UploadPanel({ onSubmit, loading, progress }) {
                             onChange={(e) => setOrders(e.target.files[0])}
                         />
                         {orders ? (
-                            <span style={{ fontSize: '0.8125rem', color: '#fff', fontWeight: 500 }}>{orders.name}</span>
+                            <div style={{ textAlign: 'center' }}>
+                                <p style={{ fontSize: '0.8rem', color: '#fff', fontWeight: 600 }}>{orders.name}</p>
+                                <p style={{ fontSize: '0.65rem', color: 'var(--muted)', marginTop: '4px' }}>Target Dataset Identified</p>
+                            </div>
                         ) : (
-                            <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Drop <b style={{ color: '#fff' }}>Orders CSV</b> here</span>
+                            <div style={{ textAlign: 'center' }}>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 500 }}>Drop <span style={{ color: '#fff' }}>Orders CSV</span></p>
+                                <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>Primary Input Required</p>
+                            </div>
                         )}
-                        <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>Required</span>
                     </div>
 
                     {/* Returns Upload */}
                     <div
                         onClick={() => returnRef.current.click()}
                         style={{
-                            padding: '1rem 1.25rem',
-                            borderRadius: 'var(--radius-md)',
-                            border: `1px solid ${returns ? 'var(--accent)' : 'var(--border)'}`,
-                            background: 'rgba(255,255,255,0.02)',
+                            padding: '1.25rem',
+                            borderRadius: '12px',
+                            border: `1px solid ${returns ? 'rgba(99, 102, 241, 0.2)' : 'var(--border)'}`,
+                            background: returns ? 'rgba(99, 102, 241, 0.02)' : 'rgba(255,255,255,0.01)',
                             cursor: 'pointer',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            transition: 'all 0.2s ease'
+                            transition: 'all 0.3s ease'
                         }}
                     >
                         <input
                             ref={returnRef} type="file" style={{ display: 'none' }}
                             onChange={(e) => setReturns(e.target.files[0])}
                         />
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: '0.8125rem', color: returns ? '#fff' : 'var(--text-secondary)', fontWeight: 500 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ fontSize: '0.8rem', color: returns ? '#fff' : 'var(--muted)', fontWeight: 600 }}>
                                 {returns ? returns.name : 'Supplement Returns Data'}
                             </span>
-                            <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)' }}>Optional</span>
+                            <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.2)', fontWeight: 500 }}>
+                                {returns ? 'Secondary Channel Mapped' : 'Optional Intelligence Layer'}
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 <button
                     disabled={!orders || loading}
-                    className="btn-primary"
+                    className="btn-premium"
                     style={{
                         width: '100%',
-                        opacity: (!orders || loading) ? 0.3 : 1,
+                        padding: '12px',
+                        background: (!orders || loading) ? 'rgba(255,255,255,0.05)' : '#fff',
+                        color: (!orders || loading) ? 'var(--muted)' : '#000',
+                        border: '1px solid var(--border)',
+                        opacity: 1,
                         cursor: (!orders || loading) ? 'not-allowed' : 'pointer'
                     }}
                 >
-                    {loading ? 'Processing...' : 'Analyze Datasets'}
+                    {loading ? 'Synthesizing...' : 'Execute Analysis'}
                 </button>
             </form>
 

@@ -9,9 +9,34 @@ export default function ResultsPanel({ report }) {
 
     if (!report) {
         return (
-            <div className="glass" style={{ height: '100%', minHeight: '640px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--muted)', background: 'rgba(255,255,255,0.01)' }}>
-                <div style={{ padding: '2rem', border: '1px solid var(--border)', borderRadius: '12px', textAlign: 'center' }}>
-                    <p style={{ fontSize: '0.8rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>Awaiting Analytical Payload</p>
+            <div className="glass" style={{ height: '100%', minHeight: '480px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.01)', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.03), transparent 70%)' }} />
+                <motion.div
+                    animate={{ opacity: [0.2, 0.4, 0.2] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{
+                        width: '100px',
+                        height: '100px',
+                        borderRadius: '50%',
+                        border: '1px solid var(--border)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: '2rem',
+                        background: 'rgba(255,255,255,0.02)'
+                    }}
+                >
+                    <div style={{ width: '24px', height: '1px', background: 'var(--border)' }} />
+                    <div style={{ width: '1px', height: '24px', background: 'var(--border)', position: 'absolute' }} />
+                </motion.div>
+
+                <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+                    <h3 style={{ fontSize: '1rem', fontWeight: 600, color: '#fff', marginBottom: '0.75rem' }}>
+                        Ready for Analysis
+                    </h3>
+                    <p style={{ fontSize: '0.7rem', color: 'var(--muted)', maxWidth: '240px', margin: '0 auto', lineHeight: 1.5, fontWeight: 500 }}>
+                        Upload transaction layers to generate strategic intelligence.
+                    </p>
                 </div>
             </div>
         )
@@ -51,7 +76,7 @@ export default function ResultsPanel({ report }) {
                         {activeTab === t && (
                             <motion.div
                                 layoutId="active-indicator"
-                                style={{ position: 'absolute', bottom: '-1.375rem', left: 0, right: 0, height: '1px', background: '#fff' }}
+                                style={{ position: 'absolute', bottom: '-1.375rem', left: 0, right: 0, height: '2px', background: 'var(--accent)' }}
                             />
                         )}
                     </button>
@@ -95,7 +120,9 @@ export default function ResultsPanel({ report }) {
                                                     {skuRevData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="none" />)}
                                                 </Pie>
                                                 <RechartsTooltip
-                                                    contentStyle={{ backgroundColor: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '11px', fontFamily: 'var(--mono)' }}
+                                                    contentStyle={{ backgroundColor: 'rgba(0,0,0,0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '11px', fontFamily: 'var(--mono)', backdropFilter: 'blur(10px)' }}
+                                                    itemStyle={{ color: '#fff', fontWeight: 600 }}
+                                                    labelStyle={{ color: 'var(--muted)', fontWeight: 800, marginBottom: '4px', textTransform: 'uppercase', fontSize: '9px' }}
                                                 />
                                             </PieChart>
                                         </ResponsiveContainer>

@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Margintel — Intelligent margin risk analysis for ecommerce. Upload CSVs and get actionable reports powered by deterministic analytics and AI reasoning.">
+    <title>Margintel | Intelligent Margin Risk Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════════════════════════
+           Design System
+           ═══════════════════════════════════════════════════════════════ */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2035;
+            --bg-card-hover: #1f2845;
+            --bg-input: #0f1729;
+            --border: #2a3554;
+            --border-active: #4f6af5;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #4f6af5;
+            --accent-hover: #6b80f7;
+            --accent-glow: rgba(79, 106, 245, 0.25);
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --info: #38bdf8;
+            --info-bg: rgba(56, 189, 248, 0.1);
+            --gradient-main: linear-gradient(135deg, #4f6af5 0%, #7c3aed 50%, #ec4899 100%);
+            --gradient-subtle: linear-gradient(135deg, rgba(79, 106, 245, 0.08) 0%, rgba(124, 58, 237, 0.08) 100%);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 40px rgba(79, 106, 245, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Animated background ─────────────────────────────────────── */
+        .bg-noise {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .bg-orbs {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .bg-orbs::before,
+        .bg-orbs::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            animation: orbFloat 20s ease-in-out infinite alternate;
+        }
+
+        .bg-orbs::before {
+            width: 600px;
+            height: 600px;
+            background: rgba(79, 106, 245, 0.08);
+            top: -200px;
+            right: -100px;
+        }
+
+        .bg-orbs::after {
+            width: 500px;
+            height: 500px;
+            background: rgba(124, 58, 237, 0.06);
+            bottom: -150px;
+            left: -100px;
+            animation-delay: -10s;
+        }
+
+        @keyframes orbFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                transform: translate(40px, 30px) scale(1.1);
+            }
+        }
+
+        /* ── Layout ──────────────────────────────────────────────────── */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ── Header ──────────────────────────────────────────────────── */
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 14, 26, 0.85);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            background: var(--gradient-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .logo-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .health-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            transition: var(--transition);
+        }
+
+        .health-badge.online {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .health-badge.offline {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .health-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .health-badge.online .health-dot {
+            background: var(--success);
+        }
+
+        .health-badge.offline .health-dot {
+            background: var(--danger);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        /* ── Hero ────────────────────────────────────────────────────── */
+        .hero {
+            text-align: center;
+            padding: 80px 0 48px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--gradient-subtle);
+            border: 1px solid rgba(79, 106, 245, 0.2);
+            color: var(--accent);
+            margin-bottom: 24px;
+            letter-spacing: 0.3px;
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ── Main Grid ───────────────────────────────────────────────── */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 32px;
+            padding-bottom: 80px;
+        }
+
+        @media (max-width: 960px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Cards ───────────────────────────────────────────────────── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: rgba(79, 106, 245, 0.3);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title .icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .card-subtitle {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        /* ── Form ────────────────────────────────────────────────────── */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
+        .form-group label .optional {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-size: 11px;
+            margin-left: 4px;
+        }
+
+        /* File upload drop zone */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--bg-input);
+            position: relative;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: rgba(79, 106, 245, 0.04);
+        }
+
+        .drop-zone.has-file {
+            border-color: var(--success);
+            border-style: solid;
+            background: var(--success-bg);
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .drop-zone .drop-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .drop-zone .drop-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .drop-zone .drop-text strong {
+            color: var(--accent);
+        }
+
+        .drop-zone .file-info {
+            font-size: 13px;
+            color: var(--success);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 14px;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .text-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .text-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Submit button */
+        .btn-primary {
+            width: 100%;
+            padding: 14px 24px;
+            border: none;
+            border-radius: var(--radius-md);
+            background: var(--gradient-main);
+            color: white;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 106, 245, 0.3);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Results panel ────────────────────────────────────────────── */
+        .results-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            max-width: 320px;
+            line-height: 1.6;
+        }
+
+        /* Metric cards row */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(79, 106, 245, 0.3);
+        }
+
+        .metric-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .metric-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Risk badge */
+        .risk-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .risk-badge.high {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .risk-badge.medium {
+            background: var(--warning-bg);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .risk-badge.low {
+            background: var(--success-bg);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px 14px;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(42, 53, 84, 0.4);
+            color: var(--text-secondary);
+        }
+
+        .data-table tr:hover td {
+            background: rgba(79, 106, 245, 0.03);
+        }
+
+        .data-table .mono {
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+
+        /* Action cards */
+        .action-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .action-card.impact-high::before {
+            background: var(--danger);
+        }
+
+        .action-card.impact-medium::before {
+            background: var(--warning);
+        }
+
+        .action-card.impact-low::before {
+            background: var(--info);
+        }
+
+        .action-card:hover {
+            transform: translateX(4px);
+            border-color: rgba(79, 106, 245, 0.3);
+        }
+
+        .action-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .action-rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--gradient-main);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .action-title {
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .action-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .action-type.data_fix {
+            background: var(--info-bg);
+            color: var(--info);
+        }
+
+        .action-type.business_experiment {
+            background: var(--warning-bg);
+            color: var(--warning);
+        }
+
+        .action-type.further_analysis {
+            background: rgba(168, 85, 247, 0.1);
+            color: #a855f7;
+        }
+
+        .action-body {
+            margin-left: 40px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .action-body .why {
+            margin-bottom: 8px;
+        }
+
+        .action-meta {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .action-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Themes */
+        .theme-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 500;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            margin: 4px;
+            transition: var(--transition);
+        }
+
+        .theme-chip:hover {
+            border-color: var(--accent);
+        }
+
+        .severity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .severity-1 {
+            background: var(--success);
+        }
+
+        .severity-2 {
+            background: #84cc16;
+        }
+
+        .severity-3 {
+            background: var(--warning);
+        }
+
+        .severity-4 {
+            background: #f97316;
+        }
+
+        .severity-5 {
+            background: var(--danger);
+        }
+
+        /* Section headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Download button */
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-download:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* JSON viewer */
+        .json-viewer {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            max-height: 400px;
+            overflow: auto;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* Collapsible sections */
+        .collapsible-trigger {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible-trigger .chevron {
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .collapsible-trigger.open .chevron {
+            transform: rotate(90deg);
+        }
+
+        .collapsible-content {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s ease;
+        }
+
+        .collapsible-content.open {
+            max-height: 2000px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            padding: 14px 24px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .toast.error {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .animate-in:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .animate-in:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .animate-in:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .animate-in:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        footer p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Notes/warnings list */
+        .notes-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .notes-list li {
+            padding: 8px 12px;
+            background: var(--warning-bg);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--warning);
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-noise"></div>
+    <div class="bg-orbs"></div>
+
+    <!-- ═══ Header ═══ -->
+    <header>
+        <div class="container header-inner">
+            <div class="logo">
+                <div class="logo-icon">M</div>
+                <div class="logo-text">
+                    <h1>Margintel</h1>
+                    <span>Precision Analytics</span>
+                </div>
+            </div>
+            <div id="healthBadge" class="health-badge offline">
+                <div class="health-dot"></div>
+                <span id="healthText">Checking…</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══ Hero ═══ -->
+    <section class="hero container">
+        <div class="hero-badge">✦ Deterministic Analytics + LLM Reasoning</div>
+        <h2>Margintel<br>Intelligence Engine</h2>
+        <p>Upload your ecommerce CSVs and get an actionable JSON report — return risk themes, revenue concentration
+            signals, and ranked decisions with evidence.</p>
+    </section>
+
+    <!-- ═══ Main ═══ -->
+    <main class="container">
+        <div class="main-grid">
+            <!-- ── Left: Upload Form ── -->
+            <aside>
+                <div class="card" id="uploadCard">
+                    <div class="card-title">
+                        <div class="icon" style="background: var(--accent-glow); color: var(--accent);">📁</div>
+                        Upload Data
+                    </div>
+                    <p class="card-subtitle">Provide your orders CSV and optionally a returns CSV.</p>
+
+                    <form id="runForm">
+                        <!-- Orders CSV -->
+                        <div class="form-group">
+                            <label>Orders CSV <span class="required">*</span></label>
+                            <div class="drop-zone" id="ordersZone">
+                                <input type="file" accept=".csv" id="ordersFile" required>
+                                <div class="drop-icon">📊</div>
+                                <div class="drop-text"><strong>Click</strong> or drag orders.csv here</div>
+                                <div class="file-info" id="ordersInfo" style="display:none;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Returns CSV -->
+                        <div class="form-group">
+                            <label>Returns CSV <span class="optional">(optional)</span></label>
+                            <div class="drop-zone" id="returnsZone">
+                                <input type="file" accept=".csv" id="returnsFile">
+                                <div class="drop-icon">🔄</div>
+                                <div class="drop-text"><strong>Click</strong> or drag returns.csv here</div>
+                                <div class="file-info" id="returnsInfo" style="display:none;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Business Goal -->
+                        <div class="form-group">
+                            <label>Business Goal <span class="optional">(optional)</span></label>
+                            <input type="text" class="text-input" id="businessGoal"
+                                placeholder="Identify margin risks and prioritize fixes"
+                                value="Identify margin risks and prioritize fixes">
+                        </div>
+
+                        <!-- Constraints -->
+                        <div class="form-group">
+                            <label>Constraints <span class="optional">(optional)</span></label>
+                            <input type="text" class="text-input" id="constraints"
+                                placeholder="e.g., 2-week sprint, no new tools">
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="submitBtn">
+                            Analyze Data
+                        </button>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- ── Right: Results ── -->
+            <section class="results-panel" id="resultsPanel">
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">📈</div>
+                    <h3>No Report Yet</h3>
+                    <p>Upload your ecommerce CSV data and hit "Analyze Data" to generate your margin intelligence
+                        report.</p>
+                </div>
+
+                <div id="reportContent" style="display:none;"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ═══ Footer ═══ -->
+    <footer>
+        <div class="container">
+            <p>Margin Intelligence Engine v0.1 · Built with Flask, pandas & GPT · <a href="/health" target="_blank">API
+                    Health</a></p>
+        </div>
+    </footer>
+
+    <!-- ═══ Toast ═══ -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        // Margin Intelligence Engine — Frontend
+        // ═══════════════════════════════════════════════════════════════════
+
+        const API_BASE = window.location.origin;
+
+        // ── Elements ───────────────────────────────────────────────────────
+        const ordersFile = document.getElementById('ordersFile');
+        const returnsFile = document.getElementById('returnsFile');
+        const ordersZone = document.getElementById('ordersZone');
+        const returnsZone = document.getElementById('returnsZone');
+        const ordersInfo = document.getElementById('ordersInfo');
+        const returnsInfo = document.getElementById('returnsInfo');
+        const form = document.getElementById('runForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const emptyState = document.getElementById('emptyState');
+        const reportContent = document.getElementById('reportContent');
+        const healthBadge = document.getElementById('healthBadge');
+        const healthText = document.getElementById('healthText');
+        const toast = document.getElementById('toast');
+
+        // ── Health Check ──────────────────────────────────────────────────
+        async function checkHealth() {
+            try {
+                const resp = await fetch(`${API_BASE}/health`);
+                const data = await resp.json();
+                healthBadge.classList.remove('offline');
+                healthBadge.classList.add('online');
+                healthText.textContent = data.llm_available ? 'Online + LLM' : 'Online (no LLM)';
+            } catch {
+                healthBadge.classList.remove('online');
+                healthBadge.classList.add('offline');
+                healthText.textContent = 'Offline';
+            }
+        }
+        checkHealth();
+        setInterval(checkHealth, 30000);
+
+        // ── File drop zones ──────────────────────────────────────────────
+        function setupDropZone(zone, input, info) {
+            ['dragenter', 'dragover'].forEach(e => {
+                zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('drag-over'); });
+            });
+            ['dragleave', 'drop'].forEach(e => {
+                zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.remove('drag-over'); });
+            });
+            zone.addEventListener('drop', ev => {
+                const files = ev.dataTransfer.files;
+                if (files.length) {
+                    input.files = files;
+                    updateFileInfo(zone, info, files[0]);
+                }
+            });
+            input.addEventListener('change', () => {
+                if (input.files.length) {
+                    updateFileInfo(zone, info, input.files[0]);
+                }
+            });
+        }
+
+        function updateFileInfo(zone, info, file) {
+            zone.classList.add('has-file');
+            info.style.display = 'block';
+            const size = (file.size / 1024).toFixed(1);
+            info.textContent = `✓ ${file.name} (${size} KB)`;
+        }
+
+        setupDropZone(ordersZone, ordersFile, ordersInfo);
+        setupDropZone(returnsZone, returnsFile, returnsInfo);
+
+        // ── Form Submit ─────────────────────────────────────────────────
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!ordersFile.files.length) {
+                showToast('Please upload an orders CSV file.', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span>Analyzing…';
+
+            const formData = new FormData();
+            formData.append('orders_file', ordersFile.files[0]);
+            if (returnsFile.files.length) {
+                formData.append('returns_file', returnsFile.files[0]);
+            }
+            formData.append('business_goal', document.getElementById('businessGoal').value);
+            formData.append('constraints', document.getElementById('constraints').value);
+
+            try {
+                const resp = await fetch(`${API_BASE}/v1/runs`, { method: 'POST', body: formData });
+                if (!resp.ok) {
+                    const err = await resp.json();
+                    throw new Error(err.error || `HTTP ${resp.status}`);
+                }
+                const data = await resp.json();
+                showToast('Analysis complete!', 'success');
+                await loadReport(data.run_id);
+            } catch (err) {
+                showToast(`Error: ${err.message}`, 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Analyze Data';
+            }
+        });
+
+        // ── Load Report ─────────────────────────────────────────────────
+        async function loadReport(runId) {
+            const resp = await fetch(`${API_BASE}/v1/runs/${runId}`);
+            const data = await resp.json();
+            const report = data.report || data;
+
+            emptyState.style.display = 'none';
+            reportContent.style.display = 'block';
+            reportContent.innerHTML = renderReport(report, runId);
+            reportContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ── Render Report ───────────────────────────────────────────────
+        function renderReport(r, runId) {
+            const p = r.profiling || {};
+            const ds = r.dataset_summary || {};
+            const ri = (r.modules || {}).returns_intelligence || {};
+            const rd = (r.modules || {}).revenue_dependency_risk || {};
+            const dec = r.decision_output || {};
+
+            const fmtCurrency = (v) => `$${(v || 0).toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            const fmtPct = (v) => `${((v || 0) * 100).toFixed(1)}%`;
+
+            let html = '';
+
+            // ── Summary Bar ──
+            html += `
+        <div class="card animate-in" style="background: var(--gradient-subtle); border-color: rgba(79,106,245,0.2);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                <div>
+                    <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">Run ID</div>
+                    <div style="font-family:var(--font-mono); font-size:13px; color:var(--accent);">${r.run_id || runId}</div>
+                </div>
+                <div>
+                    <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">Date Range</div>
+                    <div style="font-size:14px; font-weight:600;">${ds.date_range?.start || '—'} → ${ds.date_range?.end || '—'}</div>
+                </div>
+                <div>
+                    <div style="font-size:13px; color:var(--text-muted); margin-bottom:4px;">Rows</div>
+                    <div style="font-size:14px; font-weight:600;">${ds.orders_rows || 0} orders · ${ds.returns_rows || 0} returns</div>
+                </div>
+                <button class="btn-download" onclick="downloadReport('${runId}')">⬇ Download JSON</button>
+            </div>
+        </div>`;
+
+            // ── Notes ──
+            if (ds.notes && ds.notes.length) {
+                html += `<ul class="notes-list animate-in">${ds.notes.map(n => `<li>⚠ ${n}</li>`).join('')}</ul>`;
+            }
+
+            // ── Metric Cards ──
+            html += `
+        <div class="metrics-row animate-in">
+            <div class="metric-card">
+                <div class="metric-label">Total Revenue</div>
+                <div class="metric-value" style="color: var(--success);">${fmtCurrency(p.total_revenue)}</div>
+                <div class="metric-sub">${ds.currency || 'CAD'}</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total Refunds</div>
+                <div class="metric-value" style="color: var(--danger);">${fmtCurrency(p.total_refunds)}</div>
+                <div class="metric-sub">${p.total_revenue ? fmtPct(p.total_refunds / p.total_revenue) : '0%'} of revenue</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">AOV</div>
+                <div class="metric-value" style="color: var(--info);">${fmtCurrency(p.aov)}</div>
+                <div class="metric-sub">per order</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Revenue Risk</div>
+                <div class="metric-value"><span class="risk-badge ${rd.risk_level || 'low'}">${(rd.risk_level || 'low').toUpperCase()}</span></div>
+                <div class="metric-sub">concentration</div>
+            </div>
+        </div>`;
+
+            // ── Revenue Concentration ──
+            const cm = rd.concentration_metrics || {};
+            html += `
+        <div class="card animate-in">
+            <div class="section-header">
+                <div class="section-title">📊 Revenue Concentration</div>
+            </div>
+            <div class="metrics-row">
+                <div class="metric-card" style="text-align:center;">
+                    <div class="metric-label">Top 1 SKU</div>
+                    <div class="metric-value" style="font-size:24px; ${cm.top1 > 0.45 ? 'color:var(--danger)' : cm.top1 > 0.30 ? 'color:var(--warning)' : 'color:var(--success)'}">${fmtPct(cm.top1)}</div>
+                </div>
+                <div class="metric-card" style="text-align:center;">
+                    <div class="metric-label">Top 3 SKUs</div>
+                    <div class="metric-value" style="font-size:24px; ${cm.top3 > 0.65 ? 'color:var(--warning)' : 'color:var(--success)'}">${fmtPct(cm.top3)}</div>
+                </div>
+                <div class="metric-card" style="text-align:center;">
+                    <div class="metric-label">Top 5 SKUs</div>
+                    <div class="metric-value" style="font-size:24px;">${fmtPct(cm.top5)}</div>
+                </div>
+            </div>
+            ${rd.signals && rd.signals.length ? `
+            <div style="margin-top:16px;">
+                ${rd.signals.map(s => `
+                    <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--warning-bg); border-radius:var(--radius-sm); margin-bottom:6px; font-size:13px; color:var(--warning);">
+                        🚨 <span style="font-family:var(--font-mono);">${s.signal}</span> — value: <strong>${fmtPct(s.value)}</strong> (threshold: ${fmtPct(s.threshold)})
+                    </div>
+                `).join('')}
+            </div>` : ''}
+        </div>`;
+
+            // ── High Return SKUs ──
+            const hrs = p.high_return_skus || [];
+            if (hrs.length) {
+                html += `
+            <div class="card animate-in">
+                <div class="section-header">
+                    <div class="section-title">🔥 High Return SKUs</div>
+                    <span style="font-size:12px; color:var(--text-muted);">${hrs.length} flagged</span>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>SKU</th><th>Return Rate</th><th>Revenue</th><th>Margin Risk</th></tr>
+                        </thead>
+                        <tbody>
+                            ${hrs.slice(0, 10).map(s => `
+                                <tr>
+                                    <td class="mono" style="color:var(--text-primary); font-weight:600;">${s.sku}</td>
+                                    <td><span class="risk-badge ${s.return_rate > 0.3 ? 'high' : s.return_rate > 0.15 ? 'medium' : 'low'}">${fmtPct(s.return_rate)}</span></td>
+                                    <td>${fmtCurrency(s.revenue)}</td>
+                                    <td style="color:var(--danger); font-weight:600;">${fmtCurrency(s.estimated_margin_risk)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
+            }
+
+            // ── Return Themes (LLM) ──
+            const themes = ri.themes || [];
+            if (themes.length) {
+                html += `
+            <div class="card animate-in">
+                <div class="section-header">
+                    <div class="section-title">🧠 Return Reason Themes <span style="font-size:11px; color:var(--accent); font-weight:400;">(LLM)</span></div>
+                </div>
+                <div style="margin-bottom:16px;">
+                    ${themes.map(t => `<span class="theme-chip"><span class="severity-dot severity-${t.severity}"></span>${t.theme} <span style="color:var(--text-muted); font-size:11px;">(sev ${t.severity})</span></span>`).join('')}
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead><tr><th>Theme</th><th>Severity</th><th>Examples</th><th>SKUs</th></tr></thead>
+                        <tbody>
+                            ${themes.map(t => `
+                                <tr>
+                                    <td style="font-weight:600; color:var(--text-primary);">${t.theme}</td>
+                                    <td><span class="risk-badge ${t.severity >= 4 ? 'high' : t.severity >= 3 ? 'medium' : 'low'}">${t.severity}/5</span></td>
+                                    <td style="font-size:12px;">${(t.examples || []).join(', ')}</td>
+                                    <td class="mono">${(t.skus_affected || []).join(', ')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
+            }
+
+            // ── Top Risk SKUs ──
+            const trs = ri.top_risk_skus || [];
+            if (trs.length) {
+                html += `
+            <div class="card animate-in">
+                <div class="section-header">
+                    <div class="section-title">⚠️ Top Risk SKUs</div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead><tr><th>SKU</th><th>Return Rate</th><th>Revenue</th><th>Impact Est.</th><th>Evidence</th></tr></thead>
+                        <tbody>
+                            ${trs.map(s => `
+                                <tr>
+                                    <td class="mono" style="color:var(--text-primary); font-weight:600;">${s.sku}</td>
+                                    <td>${fmtPct(s.return_rate)}</td>
+                                    <td>${fmtCurrency(s.revenue)}</td>
+                                    <td style="color:var(--danger); font-weight:600;">${fmtCurrency(s.impact_estimate)}</td>
+                                    <td style="font-size:11px;">${(s.evidence || []).join(' · ')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
+            }
+
+            // ── Ranked Actions ──
+            const actions = dec.ranked_actions || [];
+            if (actions.length) {
+                html += `
+            <div class="animate-in">
+                <div class="section-header" style="margin-top:8px;">
+                    <div class="section-title">🎯 Ranked Actions</div>
+                    <span style="font-size:12px; color:var(--text-muted);">${actions.length} actions</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    ${actions.map(a => `
+                        <div class="action-card impact-${a.expected_impact || 'low'}">
+                            <div class="action-header">
+                                <div class="action-rank">${a.rank}</div>
+                                <div>
+                                    <div class="action-title">${a.title}</div>
+                                    <span class="action-type ${(a.action_type || '').replace(/\|/g, '_')}">${(a.action_type || 'action').replace(/_/g, ' ')}</span>
+                                </div>
+                            </div>
+                            <div class="action-body">
+                                <div class="why">${a.why_it_matters || ''}</div>
+                                ${a.how_to_execute && a.how_to_execute.length ? `
+                                    <div style="margin-top:8px;">
+                                        <strong style="font-size:12px; color:var(--text-muted);">How to execute:</strong>
+                                        <ul style="margin:4px 0 0 16px; list-style:disc;">
+                                            ${a.how_to_execute.map(s => `<li>${s}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                ` : ''}
+                                <div class="action-meta">
+                                    <span>📊 Impact: <strong class="risk-badge ${a.expected_impact || 'low'}" style="padding:2px 8px;">${(a.expected_impact || 'low').toUpperCase()}</strong></span>
+                                    <span>🎯 Confidence: <strong>${((a.confidence || 0) * 100).toFixed(0)}%</strong></span>
+                                    ${a.success_metric ? `<span>📐 Metric: ${a.success_metric}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+            }
+
+            // ── Limitations & Questions ──
+            const lims = dec.limitations || [];
+            const qs = dec.next_questions || [];
+            if (lims.length || qs.length) {
+                html += `
+            <div class="card animate-in">
+                <div class="section-header collapsible-trigger" onclick="toggleCollapsible(this)">
+                    <div class="section-title">📝 Limitations & Next Questions</div>
+                    <span class="chevron" style="font-size:18px;">▶</span>
+                </div>
+                <div class="collapsible-content">
+                    ${lims.length ? `
+                        <div style="margin-bottom:16px;">
+                            <div style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:8px;">Limitations</div>
+                            <ul style="list-style:none; padding:0;">
+                                ${lims.map(l => `<li style="padding:6px 12px; background:var(--bg-secondary); border-radius:var(--radius-sm); font-size:13px; color:var(--text-secondary); margin-bottom:4px;">• ${l}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    ${qs.length ? `
+                        <div>
+                            <div style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:8px;">Next Questions</div>
+                            <ul style="list-style:none; padding:0;">
+                                ${qs.map(q => `<li style="padding:6px 12px; background:var(--info-bg); border-radius:var(--radius-sm); font-size:13px; color:var(--info); margin-bottom:4px;">❓ ${q}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>`;
+            }
+
+            // ── Raw JSON ──
+            html += `
+        <div class="card animate-in">
+            <div class="section-header collapsible-trigger" onclick="toggleCollapsible(this)">
+                <div class="section-title">{ } Raw JSON Report</div>
+                <span class="chevron" style="font-size:18px;">▶</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="json-viewer">${JSON.stringify(r, null, 2)}</div>
+            </div>
+        </div>`;
+
+            return html;
+        }
+
+        // ── Helpers ──────────────────────────────────────────────────────
+        function toggleCollapsible(trigger) {
+            trigger.classList.toggle('open');
+            const content = trigger.nextElementSibling;
+            content.classList.toggle('open');
+        }
+
+        async function downloadReport(runId) {
+            try {
+                const resp = await fetch(`${API_BASE}/v1/runs/${runId}/download`);
+                const blob = await resp.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `report_${runId}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Report downloaded!', 'success');
+            } catch {
+                showToast('Download failed', 'error');
+            }
+        }
+
+        function showToast(msg, type) {
+            toast.textContent = msg;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => { toast.classList.remove('show'); }, 4000);
+        }
+    </script>
+</body>
+
+</html>

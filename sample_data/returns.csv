@@ -1,0 +1,16 @@
+order_id,sku,return_date,return_reason_text,return_amount
+1005,SKU-ALPHA,2025-01-12,Item arrived damaged — box was crushed,49.99
+1003,SKU-BETA,2025-01-10,Wrong color received — ordered blue got green,15.00
+1007,SKU-BETA,2025-01-13,Product quality worse than expected from photos,29.99
+1013,SKU-DELTA,2025-01-17,Item does not match product description at all,19.99
+1015,SKU-GAMMA,2025-01-19,Changed my mind — no longer need it,149.99
+1020,SKU-ALPHA,2025-01-24,Received a defective unit — button doesn't work,49.99
+1025,SKU-EPSILON,2025-01-28,Size was too small — sizing chart was misleading,9.99
+1030,SKU-DELTA,2025-01-31,Arrived 2 weeks late — needed it for an event,19.99
+1005,SKU-ALPHA,2025-01-14,Packaging was terrible — product scratched on arrival,49.99
+1003,SKU-BETA,2025-01-12,Color mismatch — looks nothing like the listing photo,15.00
+1014,SKU-ALPHA,2025-01-18,Missing parts in the box — incomplete product,0.00
+1010,SKU-GAMMA,2025-01-16,Found a better price elsewhere,0.00
+1012,SKU-BETA,2025-01-17,Material feels cheap — not worth the price,0.00
+1019,SKU-DELTA,2025-01-22,Product stopped working after 3 days,0.00
+1009,SKU-EPSILON,2025-01-15,Wrong item sent — ordered widget got gadget,0.00

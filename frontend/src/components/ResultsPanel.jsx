@@ -271,7 +271,7 @@ export default function ResultsPanel({ report, loading }) {
                                 <div style={{ height: '30px', width: '1px', background: 'var(--border)' }} />
                                 <div>
                                     <div className="mono" style={{ fontSize: '0.65rem', color: 'var(--fg-muted)', marginBottom: '4px' }}>INTELLIGENCE LAYER</div>
-                                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--accent)' }}>GPT-4o NEURAL SYNTHESIS</div>
+                                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--accent)' }}>GPT-5 NEURAL SYNTHESIS</div>
                                 </div>
                             </div>
                         </div>

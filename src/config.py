@@ -9,7 +9,7 @@ load_dotenv()
 
 # ── LLM ──────────────────────────────────────────────────────────────────────
 OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-4o-mini")
+LLM_MODEL: str = os.getenv("LLM_MODEL", "gpt-5")
 
 # ── Thresholds (deterministic) ───────────────────────────────────────────────
 RETURN_RATE_THRESHOLD: float = float(os.getenv("RETURN_RATE_THRESHOLD", "0.10"))

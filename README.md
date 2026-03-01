@@ -1,8 +1,5 @@
 # Margintel | The AI Margin Intelligence Engine (v1.0)
 
-[![Engine Status](https://img.shields.io/badge/Engine-Active-06B6D4?style=for-the-badge)](https://github.com/mananpdev/margin-intel-engine)
-[![Framework](https://img.shields.io/badge/Architecture-Obsidian_Clean-8B5CF6?style=for-the-badge)](docs/architecture.md)
-
 > **Margintel** is an industrial-grade intelligence layer that converts raw, messy ecommerce transaction streams into high-fidelity strategic roadmaps. It bridges the gap between **deterministic financial reconcilation** and **generative strategic synthesis**.
 
 ---
@@ -37,7 +34,7 @@ Before any AI even looks at your data, the **Profiler** and **Dependency** modul
 - **Output**: Revenue concentration, return rates, and AOV benchmarks.
 
 ### Phase B: The Generative Synthesis (Strategy)
-Once the "Truth" is established, these signals are fed into a **Neural Swarm** (powered by GPT-4o).
+Once the "Truth" is established, these signals are fed into a **Neural Swarm** (powered by GPT-5).
 - **Goal**: Translate metrics into human-executable initiatives.
 - **Output**: Ranked actions with confidence scores and execution blueprints.
 
@@ -108,7 +105,7 @@ The API includes an **Exponential Backoff Decorator**. If the OpenAI API is unde
 ### Required Stack
 - **Backend**: Python 3.10+
 - **Frontend**: Node.js 18+ (Vite)
-- **Intelligence**: OpenAI API Key (GPT-4o default)
+- **Intelligence**: OpenAI API Key (GPT-5 default)
 
 ### Setup In 2 Minutes
 1.  **Clone & Configure**:
@@ -141,4 +138,4 @@ Replacement of the single-prompt LLM with a **Multi-Agent Orchestrator**:
 
 ---
 
-© 2026 Margintel Inc. | Premium Intelligence for the Modern Merchant.
+Built by Manan Patel — demo project for AI workflow automation.

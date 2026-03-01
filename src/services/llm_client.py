@@ -192,6 +192,6 @@ def _placeholder_decision() -> dict[str, Any]:
             "Set OPENAI_API_KEY to unlock full analysis",
         ],
         "next_questions": [
-            "What LLM model do you want to use? (default: gpt-4o-mini)"
+            "What LLM model do you want to use? (default: gpt-5)"
         ],
     }

@@ -29,7 +29,7 @@ In modern retail, merchants are "Data Rich but Insight Poor." They have thousand
 
 ## 🏛 The "Obsidian" Architecture
 
-As a developer with 25 years of experience, I've seen that AI only works in production when it's anchored to a **Deterministic Core**. The Margintel "Obsidian" design splits the workload into two distinct phases:
+I've seen that AI only works in production when it's anchored to a **Deterministic Core**. The Margintel "Obsidian" design splits the workload into two distinct phases:
 
 ### Phase A: The Deterministic Core (Truth)
 Before any AI even looks at your data, the **Profiler** and **Dependency** modules execute O(n) vectorized operations using Pandas. 
